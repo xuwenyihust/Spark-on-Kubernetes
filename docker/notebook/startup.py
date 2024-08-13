@@ -104,7 +104,7 @@ class PawMarkSparkSession:
         return f"""
         <div style="border: 1px solid #e8e8e8; padding: 10px;">
             <h3>Spark Session Information</h3>
-            <p><strong>Config: {self.response}</p>
+            <p><strong>Config:</strong> {self.response}</p>
             <p><strong>Application ID:</strong> {application_id}</p>
             <p><strong>Spark UI:</strong> <a href="{spark_ui_link}">{spark_ui_link}</a></p>
         </div>
