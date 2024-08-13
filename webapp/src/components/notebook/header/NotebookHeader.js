@@ -26,6 +26,8 @@ function NotebookHeader({
       if (newValue === 0) {
         setContentType(ContentType.CODE);
       } else if (newValue === 1) {
+        setContentType(ContentType.Config);
+      } else if (newValue === 2) {
         setContentType(ContentType.Runs);
       }
     };
@@ -102,8 +104,13 @@ function NotebookHeader({
                     sx={{ 
                       textTransform: 'none',
                       height: '20px' }} />
-                <Tab label="Runs" 
+                <Tab label="Config"
                     {...a11yProps(1)} 
+                    sx={{ 
+                      textTransform: 'none',
+                      height: '20px' }} />
+                <Tab label="Runs" 
+                    {...a11yProps(2)} 
                     sx={{ 
                       textTransform: 'none',
                       height: '20px' }} />

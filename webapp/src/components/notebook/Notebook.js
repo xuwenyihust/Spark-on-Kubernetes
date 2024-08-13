@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NotebookHeader from './header/NotebookHeader';
 import Code from './content/Code';
+import Config from './content/Config';
 import Runs from './content/Runs';
 import { ContentType } from './content/ContentType';
 import { CellStatus } from './content/cell/CellStatus';
@@ -321,11 +322,12 @@ function Notebook({
                                     setCellExecutedStatus)}
                             saveNotebook={handleUpdateNotebook}
                             deleteNotebook={handleDeleteNotebook}
-                            /> : 
-                        <Runs 
-                            notebook={notebook}
-                            contentType={contentType}
-                            />)
+                            /> : contentType === ContentType.Config ?
+                            <Config /> :
+                            <Runs 
+                                notebook={notebook}
+                                contentType={contentType}
+                                />)
                     }
         
                 </Box>
