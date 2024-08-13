@@ -8,9 +8,6 @@ class SparkModel {
   static isSparkInfo(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    console.log('html:', html);
-    console.log('doc:', doc);
-
     // Check if the HTML includes Spark info
     const sparkInfo = doc.querySelector('h3');
     console.log('sparkInfo:', sparkInfo);

@@ -10,6 +10,13 @@ import logging
 
 environment = os.getenv('ENVIRONMENT', 'development')  # Default to 'development' if not set
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('startup.log')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 # Set the environment variables
 def set_env():
     # kubernetes_host = os.environ.get('KUBERNETES_SERVICE_HOST')
@@ -105,7 +112,7 @@ def create_spark_dev():
     # response = requests.get("http://localhost:5002/directory/work/user_0@gmail.com/")
     # print(response.json())
     # logging.info("Got response from server: %s", response.json())
-    logging.info("Creating Spark session")
+    logger.info("Creating Spark session")
 
     spark = PawMarkSparkSession(SparkSession.builder \
         .appName("PySpark Example") \
