@@ -43,14 +43,9 @@ class SparkApp:
   @staticmethod
   def get_spark_app_config():
     spark_app_config = {
-      'executor': {
-        'cores': 1,
-        'memory': '512m'
-      },
-      'driver': {
-        'cores': 1,
-        'memory': '512m'
-      }
+      'executor.memory': '512m',
+      'executor.cores': '1',
+      'spark.executor.instances': '1',
     }
 
     return Response(

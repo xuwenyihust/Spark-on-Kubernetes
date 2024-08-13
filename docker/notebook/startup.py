@@ -83,11 +83,8 @@ class PawMarkSparkSession:
     def __init__(self, spark_session):
         self._spark_session = spark_session
         self.history_server_base_url = "http://localhost:18080"
-
-        try:
-            self.response = requests.get("http://server:5002/spark_app/config").json()
-        except requests.exceptions.RequestException as e:
-            self.response = f"Error: {e}"
+        self.config_json = requests.get("http://server:5002/spark_app/config").json()
+        self.load_config()
     
     def __getattr__(self, name):
         return getattr(self._spark_session, name)
@@ -104,17 +101,17 @@ class PawMarkSparkSession:
         return f"""
         <div style="border: 1px solid #e8e8e8; padding: 10px;">
             <h3>Spark Session Information</h3>
-            <p><strong>Config:</strong> {self.response}</p>
+            <p><strong>Config:</strong> {self.config_json}</p>
             <p><strong>Application ID:</strong> {application_id}</p>
             <p><strong>Spark UI:</strong> <a href="{spark_ui_link}">{spark_ui_link}</a></p>
         </div>
         """
+    
+    def load_config(self):
+        for key, value in self.config_json.items():
+            self._spark_session.conf.set(key, value)
 
 def create_spark_dev():
-    # response = requests.get("http://localhost:5002/directory/work/user_0@gmail.com/")
-    # response = requests.get("http://llocalhost:5002/spark_app/config")
-    # print(response.json())
-    # logging.info("Got response from server: %s", response.json())
     logger.info("Creating Spark session")
 
     spark = PawMarkSparkSession(SparkSession.builder \
@@ -127,9 +124,9 @@ def create_spark_dev():
         .config("spark.eventLog.dir", "/opt/data/spark-events") \
         .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
         .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
-        .config("executor.memory", "1g") \
-        .config("executor.cores", "1") \
-        .config("spark.executor.instances", "1") \
+        # .config("executor.memory", "1g") \
+        # .config("executor.cores", "1") \
+        # .config("spark.executor.instances", "1") \
         .getOrCreate())
     
     return spark
