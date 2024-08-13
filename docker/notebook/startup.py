@@ -83,8 +83,11 @@ class PawMarkSparkSession:
     def __init__(self, spark_session):
         self._spark_session = spark_session
         self.history_server_base_url = "http://localhost:18080"
-        self.config_json = requests.get("http://server:5002/spark_app/config").json()
-        self.load_config()
+        try:
+            self.config_json = requests.get("http://server:5002/spark_app/config").json()
+            self.load_config()
+        except Exception as e:
+            self.config_json = 'Error loading config: ' + str(e)
     
     def __getattr__(self, name):
         return getattr(self._spark_session, name)
