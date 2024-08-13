@@ -3,6 +3,10 @@ import { Box, Card, CardHeader, CardContent, Typography, List, ListItem, ListIte
 
 function Config({ }) {
 
+  const [executorMemory, setExecutorMemory] = useState('512m');
+  const [executorCores, setExecutorCores] = useState('1');
+  const [executorInstances, setExecutorInstances] = useState('1');
+
   return (
     <Box sx={{
       marginTop: 5,
@@ -32,17 +36,29 @@ function Config({ }) {
           <List>
             <ListItem>
               <ListItemText primary="executor.memory" />
-              <TextField label="512m" variant="outlined" size="small" />
+              <TextField 
+                defaultValue={executorMemory}
+                variant="outlined"
+                size="small" 
+                onChange={(e) => setExecutorMemory(e.target.value)}/>
             </ListItem>
 
             <ListItem>
               <ListItemText primary="executor.cores" />
-              <TextField label="1" variant="outlined" size="small" />
+              <TextField 
+                defaultValue={executorCores}
+                variant="outlined"
+                size="small"
+                onChange={(e) => setExecutorCores(e.target.value)} />
             </ListItem>
 
             <ListItem>
               <ListItemText primary="spark.executor.instances" />
-              <TextField label="1" variant="outlined" size="small" />
+              <TextField
+                defaultValue={executorInstances}
+                variant="outlined"
+                size="small" 
+                onChange={(e) => setExecutorInstances(e.target.value)}/>
             </ListItem>
           </List>
         </CardContent>
