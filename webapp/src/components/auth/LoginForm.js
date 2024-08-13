@@ -33,7 +33,7 @@ function LoginForm({ onLogin }) {
         } else {
             // The login failed
             // You might want to show an error message here
-            console.error('Failed to log in');
+            console.error('Failed to log in: ', response.text, response.status);
             setError(true);
         }
     };

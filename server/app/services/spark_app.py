@@ -41,6 +41,19 @@ class SparkApp:
     )
   
   @staticmethod
+  def get_spark_app_config():
+    spark_app_config = {
+      'executor.memory': '512m',
+      'executor.cores': '1',
+      'spark.executor.instances': '1',
+    }
+
+    return Response(
+      response=json.dumps(spark_app_config),
+      status=200
+    )
+  
+  @staticmethod
   def create_spark_app(spark_app_id: str = None, notebook_path: str = None):
     logger.info(f"Creating spark app with id: {spark_app_id} for notebook path: {notebook_path}")
 

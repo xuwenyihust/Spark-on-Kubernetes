@@ -5,8 +5,13 @@ from pyspark.sql import SparkSession
 from IPython import get_ipython
 from IPython.display import *
 from kubernetes import client, config
+import requests
+import logging
 
 environment = os.getenv('ENVIRONMENT', 'development')  # Default to 'development' if not set
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Set the environment variables
 def set_env():
@@ -27,56 +32,57 @@ def set_env():
 
 # Create a Spark session
 # def create_spark(app_name, master_url):
-    spark = SparkSession.builder \
-        .appName(app_name) \
-        .master(kubernetes_url) \
-        .config("spark.submit.deployMode", "client") \
-        .config("spark.driver.host", driver_host) \
-        .config("spark.driver.cores", "1") \
-        .config("spark.driver.memory", "1g") \
-        .config("spark.executor.instances", "1") \
-        .config("spark.executor.cores", "1") \
-        .config("spark.executor.memory", "1g") \
-        .config("spark.kubernetes.namespace", namespace) \
-        .config("spark.kubernetes.container.image", executor_image) \
-        .config("spark.kubernetes.authenticate.driver.serviceAccountName", service_account) \
-        .config("spark.kubernetes.authenticate.executor.serviceAccountName", service_account) \
-        .config("spark.eventLog.enabled", "true") \
-        .config("spark.eventLog.dir", f"gs://{bucket_name}/event-logs/") \
-        .config("spark.history.fs.logDirectory", f"gs://{bucket_name}/event-logs/") \
-        .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
-        .config("spark.hadoop.fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS") \
-        .config("spark.hadoop.fs.gs.auth.service.account.enable", "true") \
-        .getOrCreate()
+    # spark = SparkSession.builder \
+    #     .appName(app_name) \
+    #     .master(kubernetes_url) \
+    #     .config("spark.submit.deployMode", "client") \
+    #     .config("spark.driver.host", driver_host) \
+    #     .config("spark.driver.cores", "1") \
+    #     .config("spark.driver.memory", "1g") \
+    #     .config("spark.executor.instances", "1") \
+    #     .config("spark.executor.cores", "1") \
+    #     .config("spark.executor.memory", "1g") \
+    #     .config("spark.kubernetes.namespace", namespace) \
+    #     .config("spark.kubernetes.container.image", executor_image) \
+    #     .config("spark.kubernetes.authenticate.driver.serviceAccountName", service_account) \
+    #     .config("spark.kubernetes.authenticate.executor.serviceAccountName", service_account) \
+    #     .config("spark.eventLog.enabled", "true") \
+    #     .config("spark.eventLog.dir", f"gs://{bucket_name}/event-logs/") \
+    #     .config("spark.history.fs.logDirectory", f"gs://{bucket_name}/event-logs/") \
+    #     .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
+    #     .config("spark.hadoop.fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS") \
+    #     .config("spark.hadoop.fs.gs.auth.service.account.enable", "true") \
+    #     .getOrCreate()
     
-    return spark
+    # return spark
 
 # def start():
-    # Configuring the API client
-    config.load_incluster_config()
+#     # Configuring the API client
+#     config.load_incluster_config()
 
-    # Creating an API instance to interact with the K8s service
-    v1 = client.CoreV1Api()
+#     # Creating an API instance to interact with the K8s service
+#     v1 = client.CoreV1Api()
 
-    # Fetching the service details
-    service_name = os.environ.get("WEBUI_SERVICE_NAME", "notebook-spark-ui")
-    service = v1.read_namespaced_service(service_name, namespace)
+#     # Fetching the service details
+#     service_name = os.environ.get("WEBUI_SERVICE_NAME", "notebook-spark-ui")
+#     service = v1.read_namespaced_service(service_name, namespace)
 
-    webui_host = service.status.load_balancer.ingress[0].ip
-    webui_port = spark.sparkContext.uiWebUrl.split(":")[-1]
-    webui_url = f"http://{webui_host}:{webui_port}"
+#     webui_host = service.status.load_balancer.ingress[0].ip
+#     webui_port = spark.sparkContext.uiWebUrl.split(":")[-1]
+#     webui_url = f"http://{webui_host}:{webui_port}"
 
-    msg = f"**App name**: {app_name}\n\n" + \
-        f"**Master**: {kubernetes_url}\n\n" + \
-        f"**Driver host**: {driver_host}\n\n" + \
-        f"**Spark UI**: {webui_url}"
+#     msg = f"**App name**: {app_name}\n\n" + \
+#         f"**Master**: {kubernetes_url}\n\n" + \
+#         f"**Driver host**: {driver_host}\n\n" + \
+#         f"**Spark UI**: {webui_url}"
 
-    display(Markdown(msg))
+#     display(Markdown(msg))
 
 class PawMarkSparkSession:
 
-    def __init__(self, spark_session):
+    def __init__(self, config_json, spark_session):
         self._spark_session = spark_session
+        self._config_json = config_json
         self.history_server_base_url = "http://localhost:18080"
     
     def __getattr__(self, name):
@@ -94,26 +100,36 @@ class PawMarkSparkSession:
         return f"""
         <div style="border: 1px solid #e8e8e8; padding: 10px;">
             <h3>Spark Session Information</h3>
+            <p><strong>Config:</strong> {self._config_json}</p>
             <p><strong>Application ID:</strong> {application_id}</p>
             <p><strong>Spark UI:</strong> <a href="{spark_ui_link}">{spark_ui_link}</a></p>
         </div>
         """
 
 def create_spark_dev():
-    spark = PawMarkSparkSession(SparkSession.builder \
-        .appName("PySpark Example") \
-        .master("spark://spark-master:7077") \
-        .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.0.0") \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.eventLog.enabled", "true") \
-        .config("spark.eventLog.dir", "/opt/data/spark-events") \
-        .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
-        .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
-        .config("executor.memory", "1g") \
-        .config("executor.cores", "1") \
-        .config("spark.executor.instances", "1") \
-        .getOrCreate())
+    logger.info("Creating Spark session")
+    try:
+        config_json = requests.get("http://server:5002/spark_app/config").json()
+    except Exception as e:
+        config_json = 'Error loading config: ' + str(e)
+
+    spark = PawMarkSparkSession(
+        config_json,
+        SparkSession.builder \
+            .appName("PySpark Example") \
+            .master("spark://spark-master:7077") \
+            .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.0.0") \
+            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+            .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+            .config("spark.eventLog.enabled", "true") \
+            .config("spark.eventLog.dir", "/opt/data/spark-events") \
+            .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
+            .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
+            .config("executor.memory", config_json['executor.memory']) \
+            .config("executor.cores", config_json['executor.cores']) \
+            .config("spark.executor.instances", config_json['spark.executor.instances']) \
+            .getOrCreate()
+        )
     
     return spark
     
