@@ -85,7 +85,7 @@ class PawMarkSparkSession:
         self.history_server_base_url = "http://localhost:18080"
 
         try:
-            self.response = requests.get("http://server:5002/spark_app/config")
+            self.response = requests.get("http://server:5002/spark_app/config").json()
         except requests.exceptions.RequestException as e:
             self.response = f"Error: {e}"
     
@@ -104,7 +104,7 @@ class PawMarkSparkSession:
         return f"""
         <div style="border: 1px solid #e8e8e8; padding: 10px;">
             <h3>Spark Session Information</h3>
-            <p><strong>{self.response}</p>
+            <p><strong>Config: {self.response}</p>
             <p><strong>Application ID:</strong> {application_id}</p>
             <p><strong>Spark UI:</strong> <a href="{spark_ui_link}">{spark_ui_link}</a></p>
         </div>
