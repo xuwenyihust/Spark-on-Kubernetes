@@ -32,17 +32,17 @@ function Config({ }) {
           <List>
             <ListItem>
               <ListItemText primary="executor.memory" />
-              <TextField label="512m" variant="outlined" />
+              <TextField label="512m" variant="outlined" size="small" />
             </ListItem>
 
             <ListItem>
               <ListItemText primary="executor.cores" />
-              <TextField label="1" variant="outlined" />
+              <TextField label="1" variant="outlined" size="small" />
             </ListItem>
 
             <ListItem>
               <ListItemText primary="spark.executor.instances" />
-              <TextField label="1" variant="outlined" />
+              <TextField label="1" variant="outlined" size="small" />
             </ListItem>
           </List>
         </CardContent>
