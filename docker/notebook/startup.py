@@ -80,14 +80,10 @@ def set_env():
 
 class PawMarkSparkSession:
 
-    def __init__(self, spark_session):
+    def __init__(self, config_json, spark_session):
         self._spark_session = spark_session
+        self._config_json = config_json
         self.history_server_base_url = "http://localhost:18080"
-        try:
-            self.config_json = requests.get("http://server:5002/spark_app/config").json()
-            self.load_config()
-        except Exception as e:
-            self.config_json = 'Error loading config: ' + str(e)
     
     def __getattr__(self, name):
         return getattr(self._spark_session, name)
@@ -109,28 +105,31 @@ class PawMarkSparkSession:
             <p><strong>Spark UI:</strong> <a href="{spark_ui_link}">{spark_ui_link}</a></p>
         </div>
         """
-    
-    def load_config(self):
-        for key, value in self.config_json.items():
-            self._spark_session.conf.set(key, value)
 
 def create_spark_dev():
     logger.info("Creating Spark session")
+    try:
+        config_json = requests.get("http://server:5002/spark_app/config").json()
+    except Exception as e:
+        config_json = 'Error loading config: ' + str(e)
 
-    spark = PawMarkSparkSession(SparkSession.builder \
-        .appName("PySpark Example") \
-        .master("spark://spark-master:7077") \
-        .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.0.0") \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.eventLog.enabled", "true") \
-        .config("spark.eventLog.dir", "/opt/data/spark-events") \
-        .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
-        .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
-        # .config("executor.memory", "1g") \
-        # .config("executor.cores", "1") \
-        # .config("spark.executor.instances", "1") \
-        .getOrCreate())
+    spark = PawMarkSparkSession(
+        config_json,
+        SparkSession.builder \
+            .appName("PySpark Example") \
+            .master("spark://spark-master:7077") \
+            .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.0.0") \
+            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+            .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+            .config("spark.eventLog.enabled", "true") \
+            .config("spark.eventLog.dir", "/opt/data/spark-events") \
+            .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
+            .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
+            .config("executor.memory", config_json['executor.memory']) \
+            .config("executor.cores", config_json['executor.cores']) \
+            .config("spark.executor.instances", config_json['spark.executor.instances']) \
+            .getOrCreate()
+        )
     
     return spark
     
