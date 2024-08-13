@@ -85,7 +85,7 @@ class PawMarkSparkSession:
         self.history_server_base_url = "http://localhost:18080"
 
         try:
-            self.response = requests.get("server:5002/spark_app/config")
+            self.response = requests.get("http://server:5002/spark_app/config")
         except requests.exceptions.RequestException as e:
             self.response = f"Error: {e}"
     
