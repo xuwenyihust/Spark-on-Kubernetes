@@ -1,12 +1,18 @@
 
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardHeader, CardContent, Typography, List, ListItem, ListItemText, TextField } from '@mui/material';
+import { Box, Card, CardHeader, CardContent, CardActions, Button, Typography, List, ListItem, ListItemText, TextField, Select, MenuItem } from '@mui/material';
 
 function Config({ }) {
 
-  const [executorMemory, setExecutorMemory] = useState('512m');
   const [executorCores, setExecutorCores] = useState('1');
   const [executorInstances, setExecutorInstances] = useState('1');
+
+  const [executorMemory, setExecutorMemory] = useState('512');
+  const [executorMemoryUnit, setExecutorMemoryUnit] = useState('m');
+
+  const handleExecutorMemoryUnitChange = (event) => {
+    setExecutorMemoryUnit(event.target.value);
+  };
 
   return (
     <Box sx={{
@@ -42,6 +48,11 @@ function Config({ }) {
                 variant="outlined"
                 size="small" 
                 onChange={(e) => setExecutorMemory(e.target.value)}/>
+              <Select value={executorMemoryUnit}
+                onChange={handleExecutorMemoryUnitChange}>
+                <MenuItem value={'m'}>MB</MenuItem>
+                <MenuItem value={'g'}>GB</MenuItem>
+              </Select>
             </ListItem>
 
             <ListItem>
@@ -63,6 +74,11 @@ function Config({ }) {
             </ListItem>
           </List>
         </CardContent>
+        <CardActions>
+          <Button variant="contained" color="primary" onClick={handleSave}>
+            Save
+          </Button>
+        </CardActions>
       </Card>
     </Box>
   );
