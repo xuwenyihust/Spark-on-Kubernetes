@@ -74,11 +74,11 @@ function Config({ }) {
             </ListItem>
           </List>
         </CardContent>
-        <CardActions>
+        {/* <CardActions>
           <Button variant="contained" color="primary" onClick={handleSave}>
             Save
           </Button>
-        </CardActions>
+        </CardActions> */}
       </Card>
     </Box>
   );
