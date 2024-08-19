@@ -3,6 +3,7 @@ from flask_cors import CORS
 from run import create_app
 from database import db
 from app.models.spark_app_config import SparkAppConfigModel
+from app.models.notebook import NotebookModel
 
 class SparkAppConfigModelTestCase(unittest.TestCase):
 
@@ -19,6 +20,14 @@ class SparkAppConfigModelTestCase(unittest.TestCase):
 
   def test_spark_app_config_model(self):
     with self.app.app_context():
+      # Create notebook
+      notebook = NotebookModel(path='test_notebook', user_id=1)
+      db.session.add(notebook)
+      db.session.commit()
+
+      self.assertEqual(notebook.id, 1)
+
+      # Create spark app config
       spark_app_config = SparkAppConfigModel(
         notebook_id=1,
         driver_memory=1,
