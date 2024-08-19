@@ -26,7 +26,7 @@ class SparkAppServiceTestCase(unittest.TestCase):
   def test_get_spark_by_id(self):
     with self.app.app_context():
       # Create User
-      user_0 = UserModel(name='testuser0', eemail='testuser0@example.com')
+      user_0 = UserModel(name='testuser0', email='testuser0@example.com')
       password = 'test_password'
       user_0.set_password(password)
       db.session.add(user_0)
