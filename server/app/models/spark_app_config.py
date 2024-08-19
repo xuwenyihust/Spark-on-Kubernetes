@@ -6,12 +6,12 @@ class SparkAppConfigModel(db.Model):
   
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     notebook_id = db.Column(db.Integer, db.ForeignKey('notebooks.id'), nullable=False)
-    driver_memory = db.Column(db.Integer, nullable=True)
-    driver_memory_overhead = db.Column(db.Integer, nullable=True)
+    driver_memory = db.Column(db.String, nullable=True)
+    driver_memory_overhead = db.Column(db.String, nullable=True)
     driver_cores = db.Column(db.Integer, nullable=True)
 
-    executor_memory = db.Column(db.Integer, nullable=True)
-    executor_memory_overhead = db.Column(db.Integer, nullable=True)
+    executor_memory = db.Column(db.String, nullable=True)
+    executor_memory_overhead = db.Column(db.InStringteger, nullable=True)
     executor_memory_fraction = db.Column(db.Float, nullable=True)
     executor_cores = db.Column(db.Integer, nullable=True)
     executor_instances = db.Column(db.Integer, nullable=True)

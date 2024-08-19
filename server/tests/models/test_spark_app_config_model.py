@@ -40,11 +40,11 @@ class SparkAppConfigModelTestCase(unittest.TestCase):
       # Create spark app config
       spark_app_config = SparkAppConfigModel(
         notebook_id=1,
-        driver_memory=1,
-        driver_memory_overhead=1,
+        driver_memory='1g',
+        driver_memory_overhead='1g',
         driver_cores=1,
-        executor_memory=1,
-        executor_memory_overhead=1,
+        executor_memory='1g',
+        executor_memory_overhead='1g',
         executor_memory_fraction=1.0,
         executor_cores=1,
         executor_instances=1,
@@ -60,11 +60,11 @@ class SparkAppConfigModelTestCase(unittest.TestCase):
 
       spark_app_config_dict = spark_app_config.to_dict()
       self.assertEqual(spark_app_config_dict['notebook_id'], 1)
-      self.assertEqual(spark_app_config_dict['driver_memory'], 1)
-      self.assertEqual(spark_app_config_dict['driver_memory_overhead'], 1)
+      self.assertEqual(spark_app_config_dict['driver_memory'], '1g')
+      self.assertEqual(spark_app_config_dict['driver_memory_overhead'], '1g')
       self.assertEqual(spark_app_config_dict['driver_cores'], 1)
-      self.assertEqual(spark_app_config_dict['executor_memory'], 1)
-      self.assertEqual(spark_app_config_dict['executor_memory_overhead'], 1)
+      self.assertEqual(spark_app_config_dict['executor_memory'], '1g')
+      self.assertEqual(spark_app_config_dict['executor_memory_overhead'], '1g')
       self.assertEqual(spark_app_config_dict['executor_memory_fraction'], 1.0)
       self.assertEqual(spark_app_config_dict['executor_cores'], 1)
       self.assertEqual(spark_app_config_dict['executor_instances'], 1)

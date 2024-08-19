@@ -48,6 +48,29 @@ class SparkAppServiceTestCase(unittest.TestCase):
       spark_app_dict = json.loads(response.data)
       self.assertEqual(spark_app_dict['spark_app_id'], '1234')
 
+  def test_get_spark_app_config(self):
+    with self.app.app_context():
+      pass
+
+  def test_update_spark_app_config(self):
+    with self.app.app_context():
+      # Create User
+      user_0 = UserModel(name='testuser0', email='testuser0@example.com')
+      password = 'test_password'
+      user_0.set_password(password)
+      db.session.add(user_0)
+      db.session.commit()
+      g.user = user_0
+
+      # Create notebook
+      notebook_0 = NotebookModel(name='Test Notebook', path='/path/to/notebook', user_id=user_0.id)
+      db.session.add(notebook_0)
+      db.session.commit()
+
+      # Update spark app config
+
+
+
   def test_create_spark_app(self):
     with self.app.app_context():
       user_0 = UserModel(name='testuser0', email='testuser0@example.com')

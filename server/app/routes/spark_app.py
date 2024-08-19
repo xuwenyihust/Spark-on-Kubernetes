@@ -12,9 +12,9 @@ def create_spark_app(spark_app_id):
     notebook_path = data.get('notebookPath', None)
     return SparkApp.create_spark_app(spark_app_id=spark_app_id, notebook_path=notebook_path)
 
-@spark_app_blueprint.route('/spark_app/config', methods=['GET'])
-def get_spark_app_config():
-    return SparkApp.get_spark_app_config()
+@spark_app_blueprint.route('/spark_app/<path:notbook_path>/config', methods=['GET'])
+def get_spark_app_config(notbook_path):
+    return SparkApp.get_spark_app_config(notbook_path=notbook_path)
 
 @spark_app_blueprint.route('/spark_app/<path:notbook_path>/config', methods=['POST'])
 def update_spark_app_config(notebook_path):

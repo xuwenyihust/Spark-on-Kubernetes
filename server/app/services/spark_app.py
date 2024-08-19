@@ -1,5 +1,6 @@
 from app.models.spark_app import SparkAppModel
 from app.models.notebook import NotebookModel
+from app.models.spark_app_config import SparkAppConfigModel
 from flask import Response
 from datetime import datetime
 import json
@@ -41,17 +42,29 @@ class SparkApp:
     )
   
   @staticmethod
-  def get_spark_app_config():
-    spark_app_config = {
-      'executor.memory': '512m',
-      'executor.cores': '1',
-      'spark.executor.instances': '1',
-    }
+  def get_spark_app_config(notbook_path):
+    # Get notebook id from path
+    notebook = NotebookModel.query.filter_by(path=notbook_path).first()
+    notebook_id = notebook.id
 
-    return Response(
-      response=json.dumps(spark_app_config),
-      status=200
-    )
+    # Get the spark app config
+    spark_app_config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).first()
+
+    if (spark_app_config is not None):
+      return Response(
+        response=json.dumps(spark_app_config.to_dict()), 
+        status=200
+      )
+    else:
+      # Default spark app config
+      spark_app_config = {
+        'spark.driver.memory': '2'
+      }
+
+      return Response(
+        response=json.dumps(spark_app_config),
+        status=200
+      )
   
   @staticmethod
   def update_spark_app_config(notebook_path: str = None, data: dict = None):
