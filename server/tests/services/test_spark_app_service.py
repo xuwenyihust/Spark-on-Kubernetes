@@ -8,6 +8,7 @@ from app.models.notebook import NotebookModel
 from app.models.user import UserModel
 from app.services.notebook import Notebook
 from app.services.spark_app import SparkApp
+import datetime
 import json
 
 class SparkAppServiceTestCase(unittest.TestCase):
@@ -39,7 +40,7 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.commit()
 
       # Create spark app
-      spark_app_0 = SparkAppModel(spark_app_id='1234', notebook_id=notebook_0.id, user_id=user_0.id, created_at='2021-01-01 00:00:00')
+      spark_app_0 = SparkAppModel(spark_app_id='1234', notebook_id=notebook_0.id, user_id=user_0.id, created_at=datetime.datetime.now())
       db.session.add(spark_app_0)
 
       # Get spark app by id
