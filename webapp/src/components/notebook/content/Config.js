@@ -14,6 +14,12 @@ function Config({ }) {
     setExecutorMemoryUnit(event.target.value);
   };
 
+  const handleSave = () => {
+    console.log('executorCores:', executorCores);
+    console.log('executorInstances:', executorInstances);
+    console.log('executorMemory:', executorMemory + executorMemoryUnit);
+  }
+
   return (
     <Box sx={{
       marginTop: 5,
@@ -47,8 +53,13 @@ function Config({ }) {
                 defaultValue={executorMemory}
                 variant="outlined"
                 size="small" 
-                onChange={(e) => setExecutorMemory(e.target.value)}/>
+                onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
+                onChange={(e) => {
+                  setExecutorMemory(e.target.value)
+                  }}/>
+              <Box m={1} />
               <Select value={executorMemoryUnit}
+                size="small"
                 onChange={handleExecutorMemoryUnitChange}>
                 <MenuItem value={'m'}>MB</MenuItem>
                 <MenuItem value={'g'}>GB</MenuItem>
@@ -74,11 +85,17 @@ function Config({ }) {
             </ListItem>
           </List>
         </CardContent>
-        {/* <CardActions>
-          <Button variant="contained" color="primary" onClick={handleSave}>
+        <CardActions>
+          <Button 
+            variant="outlined" 
+            style={{ 
+              marginLeft: '20px',
+              borderColor: 'lightgrey', 
+              color: 'grey' }}
+            onClick={handleSave}>
             Save
           </Button>
-        </CardActions> */}
+        </CardActions>
       </Card>
     </Box>
   );

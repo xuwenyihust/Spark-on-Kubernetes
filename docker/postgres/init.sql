@@ -33,6 +33,25 @@ CREATE TABLE spark_apps (
     created_at TIMESTAMP
 );
 
+CREATE TABLE spark_app_config (
+    id SERIAL PRIMARY KEY,
+    notebook_id INT REFERENCES notebooks(id),
+    driver_memory VARCHAR(100),
+    driver_memory_overhead VARCHAR(100),
+    driver_cores INT,
+    executor_memory VARCHAR(100),
+    executor_memory_overhead VARCHAR(100),
+    executor_memory_fraction FLOAT,
+    executor_cores INT,
+    executor_instances INT,
+    dynamic_allocation_enabled BOOLEAN,
+    executor_instances_min INT,
+    executor_instances_max INT,
+    shuffle_service_enabled BOOLEAN,
+    executor_idle_timeout INT,
+    queue VARCHAR(100)
+);
+
 GRANT ALL PRIVILEGES ON TABLE users TO server;
 GRANT ALL PRIVILEGES ON SEQUENCE users_id_seq TO server;
 
