@@ -39,7 +39,7 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.commit()
 
       # Create spark app
-      spark_app_0 = SparkAppModel(spark_app_id='1234', notebook_id=notebook_0.id, user_id=user_0.id)
+      spark_app_0 = SparkAppModel(spark_app_id='1234', notebook_id=notebook_0.id, user_id=user_0.id, created_at='2021-01-01 00:00:00')
       db.session.add(spark_app_0)
 
       # Get spark app by id
