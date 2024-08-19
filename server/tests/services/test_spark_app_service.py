@@ -23,6 +23,29 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.remove()
       db.drop_all()
 
+  def test_get_spark_by_id(self):
+    with self.app.app_context():
+      # Create User
+      user_0 = UserModel(name='testuser0', eemail='testuser0@example.com')
+      password = 'test_password'
+      user_0.set_password(password)
+      db.session.add(user_0)
+      db.session.commit()
+      g.user = user_0
+
+      # Create notebook
+      notebook_0 = NotebookModel(name='Test Notebook', path='/path/to/notebook', user_id=user_0.id)
+      db.session.add(notebook_0)
+      db.session.commit()
+
+      # Create spark app
+      spark_app_0 = SparkAppModel(spark_app_id='1234', notebook_id=notebook_0.id, user_id=user_0.id)
+      db.session.add(spark_app_0)
+
+      # Get spark app by id
+      spark_app_1 = SparkApp.get_spark_app_by_id(spark_app_id='1234')
+      self.assertEqual(spark_app_1.spark_app_id, '1234')
+
   def test_create_spark_app(self):
     with self.app.app_context():
       user_0 = UserModel(name='testuser0', email='testuser0@example.com')
@@ -45,4 +68,5 @@ class SparkAppServiceTestCase(unittest.TestCase):
       # Check that spark app is in the database
       spark_app = SparkAppModel.query.filter_by(spark_app_id='1234').first()
       self.assertIsNotNone(spark_app)
+
 
