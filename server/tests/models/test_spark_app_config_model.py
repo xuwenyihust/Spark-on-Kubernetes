@@ -28,7 +28,7 @@ class SparkAppConfigModelTestCase(unittest.TestCase):
       db.session.add(user)
       db.session.commit()
 
-      self.assert_Equal(user.id, 1)
+      self.assertEqual(user.id, 1)
 
       # Create notebook
       notebook = NotebookModel(name = 'test_notebook', path='test_notebook', user_id=1)
