@@ -44,8 +44,9 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.add(spark_app_0)
 
       # Get spark app by id
-      spark_app_1 = SparkApp.get_spark_app_by_id(spark_app_id='1234')
-      self.assertEqual(spark_app_1.spark_app_id, '1234')
+      response = SparkApp.get_spark_app_by_id(spark_app_id='1234')
+      spark_app_dict = json.loads(response.data)
+      self.assertEqual(spark_app_dict['spark_app_id'], '1234')
 
   def test_create_spark_app(self):
     with self.app.app_context():
