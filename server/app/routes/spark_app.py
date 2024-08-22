@@ -8,6 +8,14 @@ spark_app_blueprint = Blueprint('spark_app', __name__)
 
 logging.basicConfig(level=logging.INFO)
 
+@spark_app_blueprint.route('/spark_app')
+def spark_app():
+    return jsonify(
+        {
+           "message": "spark_app endpoint"
+        }
+    )
+
 @spark_app_blueprint.route('/spark_app/<path:spark_app_id>', methods=['POST'])
 def create_spark_app(spark_app_id):
     data = request.get_json()
