@@ -62,8 +62,8 @@ class SparkAppRouteTestCase(unittest.TestCase):
         data=json.dumps(data),
       )
 
+      print(response.data)
       self.assertEqual(response.status_code, 200)
       self.assertEqual(json.loads(response.data)['spark_app_id'], spark_app_id)
       self.assertEqual(json.loads(response.data)['notebook_id'], notebook.id)
       self.assertEqual(json.loads(response.data)['user_id'], notebook.user_id)
-      
