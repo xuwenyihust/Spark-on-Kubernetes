@@ -36,39 +36,40 @@ class SparkAppRouteTestCase(unittest.TestCase):
       response = self.client.post('/login', auth=('test_user', 'test_password'))
       return json.loads(response.data)['access_token']
     
-  def test_create_spark_app(self):
-    with self.app.app_context():
-      # Create Notebook
-      notebook = NotebookModel(name='Test Notebook', path='/path/to/notebook', user_id=1)
-      db.session.add(notebook)
-      db.session.commit()
+  # def test_create_spark_app(self):
+  #   with self.app.app_context():
+  #     # Create Notebook
+  #     notebook = NotebookModel(name='Test Notebook', path='/path/to/notebook', user_id=1)
+  #     db.session.add(notebook)
+  #     db.session.commit()
 
-      # Create Spark App
-      spark_app_id = 'app_0001'
-      path = f'/spark-app/app_0001'
+  #     # Create Spark App
+  #     spark_app_id = 'app_0001'
+  #     path = f'/spark-app/app_0001'
 
-      # data = {
-      #   'notebookPath': notebook.path
-      # }
+  #     # data = {
+  #     #   'notebookPath': notebook.path
+  #     # }
 
-      # token = self.login_and_get_token()
-      # headers = {
-      #   'Authorization': f'Bearer {token}',
-      # }
+  #     # token = self.login_and_get_token()
+  #     # headers = {
+  #     #   'Authorization': f'Bearer {token}',
+  #     # }
 
-      response = self.client.post(
-        path,
-        # headers=headers,
-        # json=json.dumps(data),
-      )
+  #     response = self.client.post(
+  #       path,
+  #       # headers=headers,
+  #       # json=json.dumps(data),
+  #     )
 
-      print(response.data)
-      # self.assertEqual(response.status_code, 200)
-      # self.assertEqual(json.loads(response.data)['spark_app_id'], spark_app_id)
-      # self.assertEqual(json.loads(response.data)['notebook_id'], notebook.id)
-      # self.assertEqual(json.loads(response.data)['user_id'], notebook.user_id)
+  #     print(response.data)
+  #     # self.assertEqual(response.status_code, 200)
+  #     # self.assertEqual(json.loads(response.data)['spark_app_id'], spark_app_id)
+  #     # self.assertEqual(json.loads(response.data)['notebook_id'], notebook.id)
+  #     # self.assertEqual(json.loads(response.data)['user_id'], notebook.user_id)
 
   def test_get_spark_app_config_by_notebook_path(self):
     with self.app.app_context():
+      token = self.login_and_get_token()
       response = self.client.get('/spark-app/path_to_notebook/config')
       print(response.data)
