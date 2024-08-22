@@ -42,7 +42,7 @@ class SparkApp:
     )
   
   @staticmethod
-  def get_spark_app_config(notbook_path):
+  def get_spark_app_config_by_notebook_path(notbook_path):
     # Get notebook id from path
     notebook = NotebookModel.query.filter_by(path=notbook_path).first()
     notebook_id = notebook.id
@@ -58,7 +58,7 @@ class SparkApp:
     else:
       # Default spark app config
       spark_app_config = {
-        'spark.driver.memory': '2'
+        'spark.driver.memory': '1g'
       }
 
       return Response(
@@ -67,7 +67,7 @@ class SparkApp:
       )
   
   @staticmethod
-  def update_spark_app_config(notebook_path: str = None, data: dict = None):
+  def update_spark_app_config_by_notebook_path(notebook_path: str = None, data: dict = None):
     logger.info(f"Updating spark app config for notebook path: {notebook_path} with data: {data}")
 
     return Response(
