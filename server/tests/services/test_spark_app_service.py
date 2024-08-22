@@ -49,7 +49,7 @@ class SparkAppServiceTestCase(unittest.TestCase):
       spark_app_dict = json.loads(response.data)
       self.assertEqual(spark_app_dict['spark_app_id'], '1234')
 
-  def test_get_spark_app_config_by_notebook_path(self):
+  def test_get_spark_app_config_by_notebook_id(self):
     with self.app.app_context():
       # Create User
       user_0 = UserModel(name='testuser0', email='testuser0@example.com')
@@ -65,7 +65,7 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.commit()
 
       # Get spark app config by notebook path
-      response = SparkApp.get_spark_app_config_by_notebook_path('/path/to/notebook')
+      response = SparkApp.get_spark_app_config_by_notebook_id(notebook_0.id)
       spark_app_config_dict = json.loads(response.data)
 
       self.assertEqual(spark_app_config_dict['spark.driver.memory'], '1g')
@@ -75,7 +75,7 @@ class SparkAppServiceTestCase(unittest.TestCase):
       self.assertEqual(spark_app_config_dict['spark.executor.instances'], 1)
       self.assertEqual(spark_app_config_dict['spark.dynamicAllocation.enabled'], False)
 
-  def test_update_spark_app_config(self):
+  def test_update_spark_app_config_by_notebook_id(self):
     with self.app.app_context():
       # Create User
       user_0 = UserModel(name='testuser0', email='testuser0@example.com')
@@ -100,15 +100,15 @@ class SparkAppServiceTestCase(unittest.TestCase):
         'spark.dynamicAllocation.enabled': True,
       }
 
-      response_0 = SparkApp.update_spark_app_config_by_notebook_path(None, data=data)
+      response_0 = SparkApp.update_spark_app_config_by_notebook_id(None, data=data)
       self.assertEqual(response_0.status_code, 404)
-      self.assertEqual(json.loads(response_0.data)['message'], 'Notebook path is None')
+      self.assertEqual(json.loads(response_0.data)['message'], 'Notebook id is None')
 
-      response_1 = SparkApp.update_spark_app_config_by_notebook_path('path_not_found', data=data)
+      response_1 = SparkApp.update_spark_app_config_by_notebook_id(999, data=data)
       self.assertEqual(response_1.status_code, 404)
       self.assertEqual(json.loads(response_1.data)['message'], 'Notebook not found')
 
-      response_2 = SparkApp.update_spark_app_config_by_notebook_path('/path/to/notebook', data=data)
+      response_2 = SparkApp.update_spark_app_config_by_notebook_id(notebook_0.id, data=data)
       self.assertEqual(response_2.status_code, 200)
       self.assertEqual(json.loads(response_2.data)['message'], 'Updated spark app config')
 
@@ -121,8 +121,6 @@ class SparkAppServiceTestCase(unittest.TestCase):
       self.assertEqual(spark_app_config.executor_cores, 2)
       self.assertEqual(spark_app_config.executor_instances, 2)
       self.assertEqual(spark_app_config.dynamic_allocation_enabled, True)
-      
-
 
   def test_create_spark_app(self):
     with self.app.app_context():
