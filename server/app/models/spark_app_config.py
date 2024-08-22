@@ -11,7 +11,7 @@ class SparkAppConfigModel(db.Model):
     driver_cores = db.Column(db.Integer, nullable=True)
 
     executor_memory = db.Column(db.String, nullable=True)
-    executor_memory_overhead = db.Column(db.InStringteger, nullable=True)
+    executor_memory_overhead = db.Column(db.String, nullable=True)
     executor_memory_fraction = db.Column(db.Float, nullable=True)
     executor_cores = db.Column(db.Integer, nullable=True)
     executor_instances = db.Column(db.Integer, nullable=True)
