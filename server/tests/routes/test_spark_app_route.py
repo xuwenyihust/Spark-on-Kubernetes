@@ -56,7 +56,7 @@ class SparkAppRouteTestCase(unittest.TestCase):
         'Authorization': f'Bearer {token}',
       }
 
-      response = self.client.get(
+      response = self.client.post(
         path,
         headers=headers,
         data=json.dumps(data),
