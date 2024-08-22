@@ -64,9 +64,9 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.commit()
 
       # Get spark app config by notebook path
-      response = SparkApp.get_spark_app_config_by_notebook_path(notebook_path='/path/to/notebook')
+      response = SparkApp.get_spark_app_config_by_notebook_path('/path/to/notebook')
       spark_app_config_dict = json.loads(response.data)
-      
+
       self.assertEqual(spark_app_config_dict['spark.driver.memory'], '1g')
 
   def test_update_spark_app_config(self):
