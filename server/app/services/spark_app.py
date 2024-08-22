@@ -75,8 +75,25 @@ class SparkApp:
   def update_spark_app_config_by_notebook_path(notebook_path: str = None, data: dict = None):
     logger.info(f"Updating spark app config for notebook path: {notebook_path} with data: {data}")
 
+    if notebook_path is None:
+      logger.error("Notebook path is None")
+      return Response(
+        response=json.dumps({'message': 'Notebook path is None'}), 
+        status=404)
+    
+    # Get the notebook id
+    notebook = NotebookModel.query.filter_by(path=notebook_path).first()
+    if notebook is None:
+      logger.error("Notebook not found")
+      return Response(
+        response=json.dumps({'message': 'Notebook not found'}), 
+        status=404)
+
+    notebook_id = notebook.id
+    SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).update(data)
+
     return Response(
-      response=json.dumps({'message': 'update_spark_app_config'}), 
+      response=json.dumps({'message': 'Updated spark app config'}), 
       status=200)
   
   @staticmethod

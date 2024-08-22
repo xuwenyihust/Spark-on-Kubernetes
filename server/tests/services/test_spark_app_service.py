@@ -90,7 +90,26 @@ class SparkAppServiceTestCase(unittest.TestCase):
       db.session.commit()
 
       # Update spark app config
+      data = {
+        'spark.driver.memory': '2g',
+        'spark.driver.cores': '1',
+        'spark.executor.memory': '2g',
+        'spark.executor.cores': '2',
+        'spark.executor.instances': '2',
+        'spark.dynamicAllocation.enabled': 'true',
+      }
 
+      response_0 = SparkApp.update_spark_app_config_by_notebook_path(None, data=data)
+      self.assertEqual(response_0.status_code, 404)
+      self.assertEqual(json.loads(response_0.data)['message'], 'Notebook path is None')
+
+      response_1 = SparkApp.update_spark_app_config_by_notebook_path('path_not_found', data=data)
+      self.assertEqual(response_1.status_code, 404)
+      self.assertEqual(json.loads(response_1.data)['message'], 'Notebook not found')
+
+      response_2 = SparkApp.update_spark_app_config_by_notebook_path('/path/to/notebook', data=data)
+      self.assertEqual(response_2.status_code, 200)
+      self.assertEqual(json.loads(response_2.data)['message'], 'Updated spark app config')
 
 
   def test_create_spark_app(self):
