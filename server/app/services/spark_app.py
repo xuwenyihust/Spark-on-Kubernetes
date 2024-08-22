@@ -109,8 +109,16 @@ class SparkApp:
       'queue': data.get('spark.queue', None)
     }
 
-    SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).update(transformed_data)
+    config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).first()
+    if config is None:
+      config = SparkAppConfigModel(notebook_id=notebook_id, **transformed_data)
+      db.session.add(config)
+    else:
+      for key, value in transformed_data.items():
+        setattr(config, key, value)
 
+    db.session.commit()
+    
     return Response(
       response=json.dumps({'message': 'Updated spark app config'}), 
       status=200)
