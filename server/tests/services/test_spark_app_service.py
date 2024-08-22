@@ -68,11 +68,11 @@ class SparkAppServiceTestCase(unittest.TestCase):
       spark_app_config_dict = json.loads(response.data)
 
       self.assertEqual(spark_app_config_dict['spark.driver.memory'], '1g')
-      self.assertEqual(spark_app_config_dict['spark.driver.cores'], '1')
+      self.assertEqual(spark_app_config_dict['spark.driver.cores'], 1)
       self.assertEqual(spark_app_config_dict['spark.executor.memory'], '1g')
-      self.assertEqual(spark_app_config_dict['spark.executor.cores'], '1')
-      self.assertEqual(spark_app_config_dict['spark.executor.instances'], '1')
-      self.assertEqual(spark_app_config_dict['spark.dynamicAllocation.enabled'], 'false')
+      self.assertEqual(spark_app_config_dict['spark.executor.cores'], 1)
+      self.assertEqual(spark_app_config_dict['spark.executor.instances'], 1)
+      self.assertEqual(spark_app_config_dict['spark.dynamicAllocation.enabled'], False)
 
   def test_update_spark_app_config(self):
     with self.app.app_context():
