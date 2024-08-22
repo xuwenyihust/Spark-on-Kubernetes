@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask import g
 from database import db
 from run import create_app
-from app.routes.notebook import notebook_blueprint
+from app.routes.spark_app import spark_app_blueprint
 from app.routes.login import login_blueprint
 from app.services.directory import Directory
 from app.models.user import UserModel
@@ -16,7 +16,7 @@ class SparkAppRouteTestCase(unittest.TestCase):
 
   def setUp(self):
     self.app = create_app()
-    self.app.register_blueprint(notebook_blueprint)
+    self.app.register_blueprint(spark_app_blueprint)
     self.app.register_blueprint(login_blueprint)
     self.client = self.app.test_client()
     with self.app.app_context():
