@@ -92,11 +92,11 @@ class SparkAppServiceTestCase(unittest.TestCase):
       # Update spark app config
       data = {
         'spark.driver.memory': '2g',
-        'spark.driver.cores': '1',
+        'spark.driver.cores': 1,
         'spark.executor.memory': '2g',
-        'spark.executor.cores': '2',
-        'spark.executor.instances': '2',
-        'spark.dynamicAllocation.enabled': 'true',
+        'spark.executor.cores': 2,
+        'spark.executor.instances': 2,
+        'spark.dynamicAllocation.enabled': True,
       }
 
       response_0 = SparkApp.update_spark_app_config_by_notebook_path(None, data=data)

@@ -59,11 +59,11 @@ class SparkApp:
       # Default spark app config
       spark_app_config = {
         'spark.driver.memory': '1g',
-        'spark.driver.cores': '1',
+        'spark.driver.cores': 1,
         'spark.executor.memory': '1g',
-        'spark.executor.cores': '1',
-        'spark.executor.instances': '1',
-        'spark.dynamicAllocation.enabled': 'false',
+        'spark.executor.cores': 1,
+        'spark.executor.instances': 1,
+        'spark.dynamicAllocation.enabled': False,
       }
 
       return Response(
