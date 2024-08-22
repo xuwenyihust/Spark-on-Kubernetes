@@ -2,13 +2,21 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, CardHeader, CardContent, CardActions, Button, Typography, List, ListItem, ListItemText, TextField, Select, MenuItem } from '@mui/material';
 
-function Config({ }) {
+function Config({ notebook }) {
 
   const [executorCores, setExecutorCores] = useState('1');
   const [executorInstances, setExecutorInstances] = useState('1');
 
   const [executorMemory, setExecutorMemory] = useState('512');
   const [executorMemoryUnit, setExecutorMemoryUnit] = useState('m');
+
+  useEffect(() => {
+    // const fetchSparkConfig = async () => {
+
+    // };
+    // fetchSparkConfig();
+    console.log('notebook:', notebook);
+  }, [notebook]);
 
   const handleExecutorMemoryUnitChange = (event) => {
     setExecutorMemoryUnit(event.target.value);

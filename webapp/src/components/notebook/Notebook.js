@@ -323,7 +323,9 @@ function Notebook({
                             saveNotebook={handleUpdateNotebook}
                             deleteNotebook={handleDeleteNotebook}
                             /> : contentType === ContentType.Config ?
-                            <Config /> :
+                            <Config 
+                                notebook={notebook}
+                                /> :
                             <Runs 
                                 notebook={notebook}
                                 contentType={contentType}

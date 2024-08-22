@@ -42,8 +42,11 @@ class SparkApp:
     )
   
   @staticmethod
-  def get_spark_app_config_by_notebook_id(notebook_id: str = None):
-    logger.info(f"Getting spark app config for notebook id: {notebook_id}")
+  def get_spark_app_config_by_notebook_path(notbook_path: str = None):
+    # Get notebook id from path
+    notebook = NotebookModel.query.filter_by(path=notbook_path).first()
+    notebook_id = notebook.id
+
     # Get the spark app config
     spark_app_config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).first()
 
@@ -69,22 +72,24 @@ class SparkApp:
       )
   
   @staticmethod
-  def update_spark_app_config_by_notebook_id(notebook_id: str = None, data: dict = None):
-    logger.info(f"Updating spark app config for notebook id: {notebook_id} with data: {data}")
+  def update_spark_app_config_by_notebook_path(notebook_path: str = None, data: dict = None):
+    logger.info(f"Updating spark app config for notebook path: {notebook_path} with data: {data}")
 
-    if notebook_id is None:
-      logger.error("Notebook id is None")
+    if notebook_path is None:
+      logger.error("Notebook path is None")
       return Response(
-        response=json.dumps({'message': 'Notebook id is None'}), 
+        response=json.dumps({'message': 'Notebook path is None'}), 
         status=404)
     
     # Get the notebook id
-    notebook = NotebookModel.query.filter_by(id=notebook_id).first()
+    notebook = NotebookModel.query.filter_by(path=notebook_path).first()
     if notebook is None:
       logger.error("Notebook not found")
       return Response(
         response=json.dumps({'message': 'Notebook not found'}), 
         status=404)
+
+    notebook_id = notebook.id
 
     # Transform data
     transformed_data = {
@@ -113,6 +118,7 @@ class SparkApp:
         setattr(config, key, value)
 
     db.session.commit()
+    db.session.refresh(config)
     
     return Response(
       response=json.dumps({'message': 'Updated spark app config'}), 
