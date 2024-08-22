@@ -90,7 +90,26 @@ class SparkApp:
         status=404)
 
     notebook_id = notebook.id
-    SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).update(data)
+
+    # Transform data
+    transformed_data = {
+      'driver_memory': data.get('spark.driver.memory', None),
+      'driver_memory_overhead': data.get('spark.driver.memoryOverhead', None),
+      'driver_cores': data.get('spark.driver.cores', None),
+      'executor_memory': data.get('spark.executor.memory', None),
+      'executor_memory_overhead': data.get('spark.executor.memoryOverhead', None),
+      'executor_memory_fraction': data.get('spark.executor.memoryFraction', None),
+      'executor_cores': data.get('spark.executor.cores', None),
+      'executor_instances': data.get('spark.executor.instances', None),
+      'dynamic_allocation_enabled': data.get('spark.dynamicAllocation.enabled', None),
+      'executor_instances_min': data.get('spark.executor.instancesMin', None),
+      'executor_instances_max': data.get('spark.executor.instancesMax', None),
+      'shuffle_service_enabled': data.get('spark.shuffle.service.enabled', None),
+      'executor_idle_timeout': data.get('spark.executor.idleTimeout', None),
+      'queue': data.get('spark.queue', None)
+    }
+
+    SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).update(transformed_data)
 
     return Response(
       response=json.dumps({'message': 'Updated spark app config'}), 
