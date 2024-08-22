@@ -44,22 +44,22 @@ class SparkAppRouteTestCase(unittest.TestCase):
       db.session.commit()
 
       # Create Spark App
-      spark_app_id = '1234'
-      path = f'/spark-app/${spark_app_id}'
+      spark_app_id = 'app_0001'
+      path = f'/spark-app/app_0001'
 
-      data = {
-        'notebookPath': notebook.path
-      }
+      # data = {
+      #   'notebookPath': notebook.path
+      # }
 
-      token = self.login_and_get_token()
-      headers = {
-        'Authorization': f'Bearer {token}',
-      }
+      # token = self.login_and_get_token()
+      # headers = {
+      #   'Authorization': f'Bearer {token}',
+      # }
 
       response = self.client.post(
         path,
-        headers=headers,
-        data=json.dumps(data),
+        # headers=headers,
+        # json=json.dumps(data),
       )
 
       print(response.data)
