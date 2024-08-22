@@ -1,5 +1,6 @@
 from app.models.spark_app import SparkAppModel
 from app.models.notebook import NotebookModel
+from app.models.spark_app_config import SparkAppConfigModel
 from flask import Response
 from datetime import datetime
 import json
@@ -41,17 +42,81 @@ class SparkApp:
     )
   
   @staticmethod
-  def get_spark_app_config():
-    spark_app_config = {
-      'executor.memory': '512m',
-      'executor.cores': '1',
-      'spark.executor.instances': '1',
+  def get_spark_app_config_by_notebook_id(notebook_id: str = None):
+    logger.info(f"Getting spark app config for notebook id: {notebook_id}")
+    # Get the spark app config
+    spark_app_config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).first()
+
+    if (spark_app_config is not None):
+      return Response(
+        response=json.dumps(spark_app_config.to_dict()), 
+        status=200
+      )
+    else:
+      # Default spark app config
+      spark_app_config = {
+        'spark.driver.memory': '1g',
+        'spark.driver.cores': 1,
+        'spark.executor.memory': '1g',
+        'spark.executor.cores': 1,
+        'spark.executor.instances': 1,
+        'spark.dynamicAllocation.enabled': False,
+      }
+
+      return Response(
+        response=json.dumps(spark_app_config),
+        status=200
+      )
+  
+  @staticmethod
+  def update_spark_app_config_by_notebook_id(notebook_id: str = None, data: dict = None):
+    logger.info(f"Updating spark app config for notebook id: {notebook_id} with data: {data}")
+
+    if notebook_id is None:
+      logger.error("Notebook id is None")
+      return Response(
+        response=json.dumps({'message': 'Notebook id is None'}), 
+        status=404)
+    
+    # Get the notebook id
+    notebook = NotebookModel.query.filter_by(id=notebook_id).first()
+    if notebook is None:
+      logger.error("Notebook not found")
+      return Response(
+        response=json.dumps({'message': 'Notebook not found'}), 
+        status=404)
+
+    # Transform data
+    transformed_data = {
+      'driver_memory': data.get('spark.driver.memory', None),
+      'driver_memory_overhead': data.get('spark.driver.memoryOverhead', None),
+      'driver_cores': data.get('spark.driver.cores', None),
+      'executor_memory': data.get('spark.executor.memory', None),
+      'executor_memory_overhead': data.get('spark.executor.memoryOverhead', None),
+      'executor_memory_fraction': data.get('spark.executor.memoryFraction', None),
+      'executor_cores': data.get('spark.executor.cores', None),
+      'executor_instances': data.get('spark.executor.instances', None),
+      'dynamic_allocation_enabled': data.get('spark.dynamicAllocation.enabled', None),
+      'executor_instances_min': data.get('spark.executor.instancesMin', None),
+      'executor_instances_max': data.get('spark.executor.instancesMax', None),
+      'shuffle_service_enabled': data.get('spark.shuffle.service.enabled', None),
+      'executor_idle_timeout': data.get('spark.executor.idleTimeout', None),
+      'queue': data.get('spark.queue', None)
     }
 
+    config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).first()
+    if config is None:
+      config = SparkAppConfigModel(notebook_id=notebook_id, **transformed_data)
+      db.session.add(config)
+    else:
+      for key, value in transformed_data.items():
+        setattr(config, key, value)
+
+    db.session.commit()
+    
     return Response(
-      response=json.dumps(spark_app_config),
-      status=200
-    )
+      response=json.dumps({'message': 'Updated spark app config'}), 
+      status=200)
   
   @staticmethod
   def create_spark_app(spark_app_id: str = None, notebook_path: str = None):
