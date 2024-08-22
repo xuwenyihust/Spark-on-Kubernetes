@@ -71,5 +71,9 @@ class SparkAppRouteTestCase(unittest.TestCase):
   def test_get_spark_app_config_by_notebook_path(self):
     with self.app.app_context():
       token = self.login_and_get_token()
-      response = self.client.get('/spark-app/path_to_notebook/config')
+      headers = {
+        'Authorization': f'Bearer {token}',
+      }
+
+      response = self.client.get('/spark-app/path_to_notebook/config', headers=headers)
       print(response.data)
