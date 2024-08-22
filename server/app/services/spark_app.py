@@ -42,7 +42,7 @@ class SparkApp:
     )
   
   @staticmethod
-  def get_spark_app_config_by_notebook_path(notbook_path):
+  def get_spark_app_config_by_notebook_path(notbook_path: str = None):
     # Get notebook id from path
     notebook = NotebookModel.query.filter_by(path=notbook_path).first()
     notebook_id = notebook.id
