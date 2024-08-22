@@ -8,6 +8,7 @@ from app.models.notebook import NotebookModel
 from app.models.user import UserModel
 from app.services.notebook import Notebook
 from app.services.spark_app import SparkApp
+from app.models.spark_app_config import SparkAppConfigModel
 import datetime
 import json
 
@@ -110,6 +111,17 @@ class SparkAppServiceTestCase(unittest.TestCase):
       response_2 = SparkApp.update_spark_app_config_by_notebook_path('/path/to/notebook', data=data)
       self.assertEqual(response_2.status_code, 200)
       self.assertEqual(json.loads(response_2.data)['message'], 'Updated spark app config')
+
+      # Check that spark app config is in the database
+      spark_app_config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_0.id).first()
+      self.assertIsNotNone(spark_app_config)
+      self.assertEqual(spark_app_config.driver_memory, '2g')
+      self.assertEqual(spark_app_config.driver_cores, 1)
+      self.assertEqual(spark_app_config.executor_memory, '2g')
+      self.assertEqual(spark_app_config.executor_cores, 2)
+      self.assertEqual(spark_app_config.executor_instances, 2)
+      self.assertEqual(spark_app_config.dynamic_allocation_enabled, True)
+      
 
 
   def test_create_spark_app(self):
