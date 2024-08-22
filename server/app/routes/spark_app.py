@@ -21,4 +21,4 @@ def get_spark_app_config(notbook_path):
 def update_spark_app_config(notbook_path):
     logging.info(f"Updating spark app config for notebook path: {notbook_path}")
     data = request.get_json()
-    return SparkApp.update_spark_app_config_by_notebook_id(notbook_path, data)
+    return SparkApp.update_spark_app_config_by_notebook_path(notbook_path, data)
