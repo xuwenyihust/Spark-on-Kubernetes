@@ -64,6 +64,7 @@ GRANT ALL PRIVILEGES ON SEQUENCE directories_id_seq TO server;
 GRANT ALL PRIVILEGES ON TABLE spark_apps TO server;
 
 GRANT ALL PRIVILEGES ON TABLE spark_app_config TO server;
+GRANT ALL PRIVILEGES ON SEQUENCE spark_app_config_id_seq TO server;
 
 -- Add some initial data
 -- user_0 -12345A
