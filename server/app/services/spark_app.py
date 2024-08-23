@@ -51,8 +51,26 @@ class SparkApp:
     spark_app_config = SparkAppConfigModel.query.filter_by(notebook_id=notebook_id).first()
 
     if (spark_app_config is not None):
+      spark_app_config_dict = spark_app_config.to_dict()
+      spark_app_config_dict_transformed = {
+        'spark.driver.memory': spark_app_config_dict['driver_memory'],
+        'spark.driver.memoryOverhead': spark_app_config_dict['driver_memory_overhead'],
+        'spark.driver.cores': spark_app_config_dict['driver_cores'],
+        'spark.executor.memory': spark_app_config_dict['executor_memory'],
+        'spark.executor.memoryOverhead': spark_app_config_dict['executor_memory_overhead'],
+        'spark.executor.memoryFraction': spark_app_config_dict['executor_memory_fraction'],
+        'spark.executor.cores': spark_app_config_dict['executor_cores'],
+        'spark.executor.instances': spark_app_config_dict['executor_instances'],
+        'spark.dynamicAllocation.enabled': spark_app_config_dict['dynamic_allocation_enabled'],
+        'spark.dynamicAllocation.minExecutors': spark_app_config_dict['executor_instances_min'],
+        'spark.dynamicAllocation.maxExecutors': spark_app_config_dict['executor_instances_max'],
+        'spark.shuffle.service.enabled': spark_app_config_dict['shuffle_service_enabled'],
+        'spark.executor.idleTimeout': spark_app_config_dict['executor_idle_timeout'],
+        'spark.queue': spark_app_config_dict['queue']
+      }
+
       return Response(
-        response=json.dumps(spark_app_config.to_dict()), 
+        response=json.dumps(spark_app_config_dict_transformed), 
         status=200
       )
     else:
@@ -102,8 +120,8 @@ class SparkApp:
       'executor_cores': data.get('spark.executor.cores', None),
       'executor_instances': data.get('spark.executor.instances', None),
       'dynamic_allocation_enabled': data.get('spark.dynamicAllocation.enabled', None),
-      'executor_instances_min': data.get('spark.executor.instancesMin', None),
-      'executor_instances_max': data.get('spark.executor.instancesMax', None),
+      'executor_instances_min': data.get('spark.dynamicAllocation.minExecutors', None),
+      'executor_instances_max': data.get('spark.dynamicAllocation.maxExecutors', None),
       'shuffle_service_enabled': data.get('spark.shuffle.service.enabled', None),
       'executor_idle_timeout': data.get('spark.executor.idleTimeout', None),
       'queue': data.get('spark.queue', None)

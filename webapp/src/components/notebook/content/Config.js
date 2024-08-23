@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Card, CardHeader, CardContent, CardActions, Button, Typography, List, ListItem, ListItemText, TextField, Select, MenuItem } from '@mui/material';
 import SparkAppConfigModel from '../../../models/SparkAppConfigModel';
 
-function Config({ notebookPath }) {
+function Config({ notebook, notebookPath }) {
 
   const [loading, setLoading] = useState(true);
 
@@ -15,6 +15,7 @@ function Config({ notebookPath }) {
 
   useEffect(() => {
     const fetchSparkConfig = async () => {
+      setLoading(true); 
       const config = await SparkAppConfigModel.getSparkAppConfigByNotebookPath(notebookPath);
       console.log('config: ', config);
 
@@ -26,7 +27,7 @@ function Config({ notebookPath }) {
       setLoading(false); 
     };
     fetchSparkConfig();
-  }, [notebookPath]);
+  }, [notebookPath, notebook]);
 
   const handleExecutorMemoryUnitChange = (event) => {
     setExecutorMemoryUnit(event.target.value);
@@ -36,6 +37,23 @@ function Config({ notebookPath }) {
     console.log('executorCores:', executorCores);
     console.log('executorInstances:', executorInstances);
     console.log('executorMemory:', executorMemory + executorMemoryUnit);
+
+    const sparkAppConfig = {
+      'spark.executor.cores': executorCores,
+      'spark.executor.instances': executorInstances,
+      'spark.executor.memory': executorMemory + executorMemoryUnit,
+      'spark.executor.memoryOverhead': '1g',
+      'saprk.executor.memory.fraction': '0.8',
+      'spark.driver.cores': 1,
+      'spark.driver.memory': '1g',
+      'spark.driver.memoryOverhead': '1g',
+      'spark.dynamicAllocation.enabled': false,
+      'spark.dynamicAllocation.minExecutors': 1,
+      'spark.dynamicAllocation.maxExecutors': 1,
+      'spark.shuffle.service.enabled': false,
+    };
+
+    SparkAppConfigModel.updateSparkAppConfig(notebookPath, sparkAppConfig);
   }
 
   if (loading) {
