@@ -112,8 +112,8 @@ class PawMarkSparkSession:
 def create_spark(notebook_path):
     logger.info("Creating Spark session")
     try:
-        # config_json = requests.get(f"http://server:5002/spark_app/{notebook_path}/config").json()
-        config_json = requests.get(f"http://localhost:5002/spark_app/{notebook_path}/config").json()
+        config_json = requests.get(f"http://server:5002/spark_app/{notebook_path}/config").json()
+        # config_json = requests.get(f"http://localhost:5002/spark_app/{notebook_path}/config").json()
     except Exception as e:
         config_json = 'Error loading config: ' + str(e)
 
