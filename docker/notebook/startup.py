@@ -80,8 +80,9 @@ def set_env():
 
 class PawMarkSparkSession:
 
-    def __init__(self, config_json, spark_session):
+    def __init__(self, notebook_path, config_json, spark_session):
         self._spark_session = spark_session
+        self._notebook_path = notebook_path
         self._config_json = config_json
         self.history_server_base_url = "http://localhost:18080"
     
@@ -100,20 +101,22 @@ class PawMarkSparkSession:
         return f"""
         <div style="border: 1px solid #e8e8e8; padding: 10px;">
             <h3>Spark Session Information</h3>
+            <p><strong>notebook_path: </strong> {self._notebook_path}</p>
             <p><strong>Config:</strong> {self._config_json}</p>
             <p><strong>Application ID:</strong> {application_id}</p>
             <p><strong>Spark UI:</strong> <a href="{spark_ui_link}">{spark_ui_link}</a></p>
         </div>
         """
 
-def create_spark_dev():
+def create_spark(notebook_path):
     logger.info("Creating Spark session")
     try:
-        config_json = requests.get("http://server:5002/spark_app/config").json()
+        config_json = requests.get(f"http://server:5002/spark_app/{notebook_path}config").json()
     except Exception as e:
         config_json = 'Error loading config: ' + str(e)
 
     spark = PawMarkSparkSession(
+        notebook_path,
         config_json,
         SparkSession.builder \
             .appName("PySpark Example") \
@@ -125,12 +128,12 @@ def create_spark_dev():
             .config("spark.eventLog.dir", "/opt/data/spark-events") \
             .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
             .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
-            .config("executor.memory", config_json['executor.memory']) \
-            .config("executor.cores", config_json['executor.cores']) \
+            .config("executor.memory", config_json['spark.executor.memory']) \
+            .config("executor.cores", config_json['spark.executor.cores']) \
             .config("spark.executor.instances", config_json['spark.executor.instances']) \
             .getOrCreate()
         )
     
     return spark
     
-spark = create_spark_dev()
+spark = create_spark()

@@ -1,6 +1,6 @@
 import Cell from './cell/Cell';
 import NotebookModel from '../../../models/NotebookModel';
-import NotebookToolbar from './NotebookToolbar';
+import NotebookToolbar from './toolbar/NotebookToolbar';
 import config from '../../../config';
 import { Box, Button, Tooltip, Card } from '@mui/material';
 

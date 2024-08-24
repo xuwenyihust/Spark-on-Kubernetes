@@ -1,7 +1,7 @@
 import { VscFolder } from "react-icons/vsc";
 import Tooltip from '@mui/material/Tooltip';
 import { IconButton } from '@mui/material';
-import MoveDialog from "./MoveDialog";
+import MoveDialog from "../../header/move/MoveDialog";
 import { useState } from 'react';
 
 const MoveButton = ({ 
