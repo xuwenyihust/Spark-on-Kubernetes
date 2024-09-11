@@ -129,9 +129,12 @@ def create_spark(notebook_path):
             .config("spark.eventLog.dir", "/opt/data/spark-events") \
             .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
             .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
-            .config("executor.memory", "1g") \
-            .config("executor.cores", "1") \
-            .config("spark.executor.instances", "1") \
+            .config("driver.cores", config_json["spark.driver.cores"]) \
+            .config("driver.memory", config_json["spark.driver.memory"]) \
+            .config("executor.memory", config_json["spark.executor.memory"]) \
+            .config("executor.cores", config_json["spark.executor.cores"]) \
+            .config("spark.executor.instances", config_json["spark.executor.instances"]) \
+            .config("spark.dynamicAllocation.enabled", config_json["spark.dynamicAllocation.enabled"]) \
             .getOrCreate()
         )
     
