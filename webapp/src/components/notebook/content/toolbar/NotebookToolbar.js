@@ -15,6 +15,18 @@ const NotebookToolbar = ({
 
   const createSparkSession = () => {
     console.log('Creating Spark Session...');
+    // Insert a cell in notebook
+    cell = {
+      cell_type: 'code',
+      execution_count: null,
+      metadata: {},
+      outputs: [],
+      source: [
+        'spark = create_spark("work/user_0@gmail.com/demo.ipynb")',
+        'spark'
+      ]
+    }
+    notebook.cells.push(cell);
   }
 
   return (
