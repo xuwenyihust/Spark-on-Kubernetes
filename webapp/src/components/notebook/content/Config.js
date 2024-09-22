@@ -7,6 +7,10 @@ function Config({ notebook, notebookPath }) {
 
   const [loading, setLoading] = useState(true);
 
+  const [driverCores, setDriverCores] = useState(null);
+  const [driverMemory, setDriverMemory] = useState(null);
+  const [driverMemoryUnit, setDriverMemoryUnit] = useState('m');
+
   const [executorCores, setExecutorCores] = useState(null);
   const [executorInstances, setExecutorInstances] = useState(null);
 
@@ -19,6 +23,9 @@ function Config({ notebook, notebookPath }) {
       const config = await SparkAppConfigModel.getSparkAppConfigByNotebookPath(notebookPath);
       console.log('config: ', config);
 
+      setDriverCores(config.driver_cores);
+      setDriverMemory(config.driver_memory);
+      setDriverMemoryUnit(config.driver_memory_unit);
       setExecutorCores(config.executor_cores);
       setExecutorInstances(config.executor_instances);
       setExecutorMemory(config.executor_memory);
@@ -29,11 +36,17 @@ function Config({ notebook, notebookPath }) {
     fetchSparkConfig();
   }, [notebookPath, notebook]);
 
+  const handleDriverMemoryUnitChange = (event) => {
+    setDriverMemoryUnit(event.target.value);
+  };
+
   const handleExecutorMemoryUnitChange = (event) => {
     setExecutorMemoryUnit(event.target.value);
   };
 
   const handleSave = () => {
+    console.log('driverCores:', driverCores);
+    console.log('driverMemory:', driverMemory + driverMemoryUnit);
     console.log('executorCores:', executorCores);
     console.log('executorInstances:', executorInstances);
     console.log('executorMemory:', executorMemory + executorMemoryUnit);
@@ -44,8 +57,8 @@ function Config({ notebook, notebookPath }) {
       'spark.executor.memory': executorMemory + executorMemoryUnit,
       'spark.executor.memoryOverhead': '1g',
       'saprk.executor.memory.fraction': '0.8',
-      'spark.driver.cores': 1,
-      'spark.driver.memory': '1g',
+      'spark.driver.cores': driverCores,
+      'spark.driver.memory': driverMemory + driverMemoryUnit,
       'spark.driver.memoryOverhead': '1g',
       'spark.dynamicAllocation.enabled': false,
       'spark.dynamicAllocation.minExecutors': 1,
@@ -86,6 +99,34 @@ function Config({ notebook, notebookPath }) {
             }}/>
           <CardContent>
             <List>
+            <ListItem>
+                <ListItemText primary="spark.driver.memory" />
+                <TextField 
+                  defaultValue={driverMemory}
+                  variant="outlined"
+                  size="small" 
+                  onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
+                  onChange={(e) => {
+                    setDriverMemory(e.target.value)
+                    }}/>
+                <Box m={1} />
+                <Select value={driverMemoryUnit}
+                  size="small"
+                  onChange={handleDriverMemoryUnitChange}>
+                  <MenuItem value={'m'}>MB</MenuItem>
+                  <MenuItem value={'g'}>GB</MenuItem>
+                </Select>
+              </ListItem>
+
+              <ListItem>
+                <ListItemText primary="spark.driver.cores" />
+                <TextField 
+                  defaultValue={driverCores}
+                  variant="outlined"
+                  size="small"
+                  onChange={(e) => setDriverCores(e.target.value)} />
+              </ListItem>
+
               <ListItem>
                 <ListItemText primary="spark.executor.memory" />
                 <TextField 

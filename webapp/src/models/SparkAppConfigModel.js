@@ -14,6 +14,15 @@ class SparkAppConfigModel {
 
       const data_transformed = {};
 
+      const driverMemory = data['spark.driver.memory'];
+      const driverMemoryUnit = driverMemory.slice(-1);
+      const driverValue = driverMemory.slice(0, -1);
+      data_transformed.driver_memory = driverValue;
+      data_transformed.driver_memory_unit = driverMemoryUnit;
+
+      const driverCores = data['spark.driver.cores'];
+      data_transformed.driver_cores = driverCores;
+
       const executorMemory = data['spark.executor.memory'];
       const memoryUnit = executorMemory.slice(-1);
       const memoryValue = executorMemory.slice(0, -1);
