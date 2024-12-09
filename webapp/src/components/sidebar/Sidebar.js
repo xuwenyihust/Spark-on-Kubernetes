@@ -141,18 +141,19 @@ function Sidebar({
                   <ListItemIcon>
                       <CgAdd style={{ color: openCreateDrawer ? 'white' : 'white' }} />
                   </ListItemIcon>
-                  <ListItemText>
+                  <ListItemText 
+                    primary={
                       <Typography 
-                        variant="body1" 
-                        sx={{ 
-                          fontFamily: 'Roboto', 
-                          fontSize: '15px',
-                          color: openCreateDrawer ? 'white' : 'white', 
-                          marginLeft: '-30px'
+                        sx={{
+                          fontFamily: 'Roboto, Arial, sans-serif',
+                          fontSize: '14px',  // Adjust size as needed
+                          color: 'white', 
+                          marginLeft: '-30px' 
                         }}>
                         Create
                       </Typography>
-                  </ListItemText>
+                    }
+                  />
                 </ListItem>
 
                 {openCreateDrawer && (
@@ -184,18 +185,19 @@ function Sidebar({
                   <ListItemIcon>
                       <CgAlbum style={{ color: openWorkspaceDrawer ? 'white' : 'white' }} />
                   </ListItemIcon>
-                  <ListItemText>
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
-                      fontFamily: 'Roboto', 
-                      fontSize: '15px',
-                      color: openWorkspaceDrawer ? 'white' : 'white', 
-                      marginLeft: '-30px' 
-                    }}>
-                    Workspace
-                  </Typography>
-                  </ListItemText>
+                  <ListItemText 
+                    primary={
+                      <Typography 
+                        sx={{
+                          fontFamily: 'Roboto, Arial, sans-serif',
+                          fontSize: '14px',  // Adjust size as needed
+                          color: 'white', 
+                          marginLeft: '-30px' 
+                        }}>
+                        Workspace
+                      </Typography>
+                    }
+                  />
                 </ListItem>
                 
                 { openWorkspaceDrawer && (
@@ -230,18 +232,19 @@ function Sidebar({
                   <ListItemIcon>
                       <CgEye style={{ color: 'white' }} />
                   </ListItemIcon>
-                  <ListItemText>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        fontFamily: 'Roboto', 
-                        fontSize: '15px',
-                        color: 'white', 
-                        marginLeft: '-30px' 
-                      }}>
-                      History Server
-                    </Typography>
-                  </ListItemText>
+                  <ListItemText 
+                    primary={
+                      <Typography 
+                        sx={{
+                          fontFamily: 'Roboto, Arial, sans-serif',
+                          fontSize: '14px',  // Adjust size as needed
+                          color: 'white', 
+                          marginLeft: '-30px' 
+                        }}>
+                        History Server
+                      </Typography>
+                    }
+                  />
                 </ListItem>
 
                 {/* Scheduler */}
@@ -263,18 +266,19 @@ function Sidebar({
                   <ListItemIcon>
                       <CgCalendarToday style={{ color: 'white' }} />
                   </ListItemIcon>
-                  <ListItemText>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        fontFamily: 'Roboto', 
-                        fontSize: '15px',
-                        color: 'white', 
-                        marginLeft: '-30px' 
-                      }}>
-                      Scheduler
-                    </Typography>
-                  </ListItemText>
+                  <ListItemText 
+                    primary={
+                      <Typography 
+                        sx={{
+                          fontFamily: 'Roboto, Arial, sans-serif',
+                          fontSize: '14px',  // Adjust size as needed
+                          color: 'white', 
+                          marginLeft: '-30px' 
+                        }}>
+                        Scheduler
+                      </Typography>
+                    }
+                  />
                 </ListItem>
             </List>
 
