@@ -333,6 +333,7 @@ function Notebook({
                             runAllCells={runAllCells}
                             saveNotebook={handleUpdateNotebook}
                             deleteNotebook={handleDeleteNotebook}
+                            createSparkSession={handleCreateSparkSession}
                             /> : contentType === ContentType.Config ?
                             <Config 
                                 notebook={notebook}
