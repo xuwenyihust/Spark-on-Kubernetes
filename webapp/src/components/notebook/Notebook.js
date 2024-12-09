@@ -36,6 +36,8 @@ function Notebook({
     const [cellStatuses, setCellStatuses] = useState(notebookState.content ? notebookState.content.cells.map(() => CellStatus.IDLE) : []);
     const [cellExecutedStatuses, setCellExecutedStatuses] = useState(notebookState.content ? notebookState.content.cells.map(cell => cell.cell_type === 'markdown') : []);
 
+    const [sparkConfig, setSparkConfig] = useState(null);
+    
     const setCellStatus = (index, status) => {
         setCellStatuses(prevStatuses => {
           const newStatuses = [...prevStatuses];
@@ -263,6 +265,19 @@ function Notebook({
         } catch (error) {
             console.error('Failed to execute cell:', error);
         }
+    };
+
+    const handleCreateSparkSession = async () => {
+      try {
+        const sparkAppId = await SparkModel.createSparkSession(notebook.path);
+        setSparkAppId(sparkAppId);
+        
+        // Optional: Show success message
+        alert('Spark session created successfully!');
+      } catch (error) {
+        console.error('Failed to create Spark session:', error);
+        alert('Failed to create Spark session. Please check the configuration.');
+      }
     };
 
     return (

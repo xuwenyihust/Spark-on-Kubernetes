@@ -44,6 +44,39 @@ class SparkModel {
     return applicationId;
   }
 
+  static async createSparkSession(notebookPath) {
+    try {
+      // First get the config for this notebook
+      const configResponse = await fetch(`${config.serverBaseUrl}/spark_app/${notebookPath}/config`);
+      if (!configResponse.ok) {
+        throw new Error('Failed to fetch Spark configuration');
+      }
+      const sparkConfig = await configResponse.json();
+
+      // Create the Spark session with this config
+      const response = await fetch(`${config.serverBaseUrl}/spark_app/session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notebookPath: notebookPath,
+          config: sparkConfig
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create Spark session');
+      }
+
+      const data = await response.json();
+      return data.sparkAppId;
+    } catch (error) {
+      console.error('Error creating Spark session:', error);
+      throw error;
+    }
+  }
+
 }
 
 export default SparkModel;
