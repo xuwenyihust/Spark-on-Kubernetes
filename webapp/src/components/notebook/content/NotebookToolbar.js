@@ -87,13 +87,12 @@ const NotebookToolbar = ({
             <SparkIcon 
               width={headerIconSize}
               height={headerIconSize}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'black';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'black';
-              }}
-              style={{ color: 'black' }}/>
+              style={{ 
+                color: 'black',
+                '&:hover': {
+                  color: 'black'
+                }
+              }}/>
           </IconButton>
         </Tooltip>
 
