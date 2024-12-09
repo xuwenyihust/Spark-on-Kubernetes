@@ -18,8 +18,16 @@ const theme = createTheme({
                   color: '#fff', // White text color
                   width: '200px',
                   justifyContent: 'left',
+                  fontFamily: 'Roboto, Arial, sans-serif',
               },
           },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            fontFamily: 'Roboto, Arial, sans-serif',
+          },
+        },
       },
       MuiAppBar: {
         styleOverrides: {
