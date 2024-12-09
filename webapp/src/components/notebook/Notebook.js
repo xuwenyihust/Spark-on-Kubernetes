@@ -267,6 +267,24 @@ function Notebook({
         }
     };
 
+    const runAllCells = async () => {
+        console.log('Running all cells');
+        try {
+            await NotebookModel.runAllCells(
+                jupyterBaseUrl,
+                notebookState,
+                kernelId,
+                setKernelId,
+                cellStatuses,
+                setCellStatus,
+                cellExecutedStatuses,
+                setCellExecutedStatus
+            );
+        } catch (error) {
+            console.error('Failed to run all cells:', error);
+        }
+    };
+
     return (
         <div>
             {showNotebook && (
