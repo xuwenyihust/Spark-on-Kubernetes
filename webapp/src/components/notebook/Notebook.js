@@ -11,7 +11,6 @@ import SessionModel from '../../models/SessionModel'
 import SparkModel from '../../models/SparkModel';
 import config from '../../config';
 import { Box } from '@mui/material';
-import NotebookToolbar from './content/NotebookToolbar';
 
 
 function Notebook({ 
@@ -268,19 +267,6 @@ function Notebook({
         }
     };
 
-    const handleCreateSparkSession = async () => {
-        console.log('Create Spark session clicked');
-        try {
-            const sparkAppId = await SparkModel.createSparkSession(notebook.path);
-            console.log('Spark session created with ID:', sparkAppId);
-            setSparkAppId(sparkAppId);
-            alert('Spark session created successfully!');
-        } catch (error) {
-            console.error('Failed to create Spark session:', error);
-            alert('Failed to create Spark session. Please check the configuration.');
-        }
-    };
-
     return (
         <div>
             {showNotebook && (
@@ -326,16 +312,7 @@ function Notebook({
                             handleCreateCell={handleCreateCell}
                             kernelId={kernelId}
                             setKernelId={setKernelId}
-                            runAllCells={
-                                () => NotebookModel.runAllCells(
-                                    jupyterBaseUrl, 
-                                    notebookState, 
-                                    kernelId, 
-                                    setKernelId, 
-                                    cellStatuses, 
-                                    setCellStatus,
-                                    cellExecutedStatuses,
-                                    setCellExecutedStatus)}
+                            runAllCells={runAllCells}
                             saveNotebook={handleUpdateNotebook}
                             deleteNotebook={handleDeleteNotebook}
                             /> : contentType === ContentType.Config ?
@@ -351,12 +328,6 @@ function Notebook({
         
                 </Box>
             )}
-            <NotebookToolbar 
-                notebook={notebook}
-                runAllCells={runAllCells}
-                saveNotebook={handleUpdateNotebook}
-                deleteNotebook={handleDeleteNotebook}
-                createSparkSession={handleCreateSparkSession} />
         </div>
     );
 }
