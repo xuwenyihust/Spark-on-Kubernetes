@@ -1,5 +1,4 @@
-import { VscSave, VscRunAll, VscTrash } from "react-icons/vsc";
-import { ReactComponent as SparkIcon } from '../../../assets/spark-logo-rev.svg';
+import { VscSave, VscRunAll, VscTrash, VscFlame } from "react-icons/vsc";
 import Tooltip from '@mui/material/Tooltip';
 import { Card, IconButton } from '@mui/material';
 import MoveButton from "../header/move/MoveButton";
@@ -84,15 +83,15 @@ const NotebookToolbar = ({
             sx={{ 
                 width: 'auto',
                 mt: 0.5 }}>
-            <SparkIcon 
-              width={headerIconSize}
-              height={headerIconSize}
-              style={{ 
-                color: 'black',
-                '&:hover': {
-                  color: 'black'
-                }
-              }}/>
+            <VscFlame
+              size={headerIconSize} 
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'black';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'black';
+              }}
+              style={{ color: 'black' }}/>
           </IconButton>
         </Tooltip>
 
