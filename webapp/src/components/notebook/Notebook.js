@@ -285,6 +285,19 @@ function Notebook({
         }
     };
 
+    const handleCreateSparkSession = async () => {
+        console.log('Create Spark session clicked');
+        try {
+            const sparkAppId = await SparkModel.createSparkSession(notebookState.path);
+            console.log('Spark session created with ID:', sparkAppId);
+            setSparkAppId(sparkAppId);
+            alert('Spark session created successfully!');
+        } catch (error) {
+            console.error('Failed to create Spark session:', error);
+            alert('Failed to create Spark session. Please check the configuration.');
+        }
+    };
+
     return (
         <div>
             {showNotebook && (
