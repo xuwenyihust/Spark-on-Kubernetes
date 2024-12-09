@@ -1,4 +1,5 @@
 import { VscSave, VscRunAll, VscTrash } from "react-icons/vsc";
+import { ReactComponent as SparkIcon } from '../../../assets/spark-logo-rev.svg';
 import Tooltip from '@mui/material/Tooltip';
 import { Card, IconButton } from '@mui/material';
 import MoveButton from "../header/move/MoveButton";
@@ -7,7 +8,8 @@ const NotebookToolbar = ({
   notebook,
   runAllCells, 
   saveNotebook, 
-  deleteNotebook
+  deleteNotebook,
+  createSparkSession
 }) => {
   const headerIconSize = 13;
 
@@ -72,6 +74,28 @@ const NotebookToolbar = ({
         <MoveButton 
           notebook={notebook}
           headerIconSize={headerIconSize}/>
+
+        {/* New Spark Button */}
+        <Tooltip title="Create Spark Session">
+          <IconButton 
+            disableRipple
+            onClick={createSparkSession}
+            aria-label="spark" 
+            sx={{ 
+                width: 'auto',
+                mt: 0.5 }}>
+            <SparkIcon 
+              width={headerIconSize}
+              height={headerIconSize}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'black';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'black';
+              }}
+              style={{ color: 'black' }}/>
+          </IconButton>
+        </Tooltip>
 
         {/* Delete Button */}
         <Tooltip title="Delete Notebook">
