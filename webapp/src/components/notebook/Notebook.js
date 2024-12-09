@@ -11,7 +11,7 @@ import SessionModel from '../../models/SessionModel'
 import SparkModel from '../../models/SparkModel';
 import config from '../../config';
 import { Box } from '@mui/material';
-import NotebookToolbar from './NotebookToolbar';
+import NotebookToolbar from './content/NotebookToolbar';
 
 
 function Notebook({ 
