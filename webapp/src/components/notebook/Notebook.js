@@ -11,6 +11,7 @@ import SessionModel from '../../models/SessionModel'
 import SparkModel from '../../models/SparkModel';
 import config from '../../config';
 import { Box } from '@mui/material';
+import NotebookToolbar from './NotebookToolbar';
 
 
 function Notebook({ 
@@ -268,16 +269,16 @@ function Notebook({
     };
 
     const handleCreateSparkSession = async () => {
-      try {
-        const sparkAppId = await SparkModel.createSparkSession(notebook.path);
-        setSparkAppId(sparkAppId);
-        
-        // Optional: Show success message
-        alert('Spark session created successfully!');
-      } catch (error) {
-        console.error('Failed to create Spark session:', error);
-        alert('Failed to create Spark session. Please check the configuration.');
-      }
+        console.log('Create Spark session clicked');
+        try {
+            const sparkAppId = await SparkModel.createSparkSession(notebook.path);
+            console.log('Spark session created with ID:', sparkAppId);
+            setSparkAppId(sparkAppId);
+            alert('Spark session created successfully!');
+        } catch (error) {
+            console.error('Failed to create Spark session:', error);
+            alert('Failed to create Spark session. Please check the configuration.');
+        }
     };
 
     return (
@@ -350,6 +351,12 @@ function Notebook({
         
                 </Box>
             )}
+            <NotebookToolbar 
+                notebook={notebook}
+                runAllCells={runAllCells}
+                saveNotebook={handleUpdateNotebook}
+                deleteNotebook={handleDeleteNotebook}
+                createSparkSession={handleCreateSparkSession} />
         </div>
     );
 }
