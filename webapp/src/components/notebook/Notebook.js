@@ -262,9 +262,8 @@ function Notebook({
                 if (appId) {
                     SparkModel.storeSparkInfo(appId, notebook.path);
                 }
+                console.log('Spark app id:', appId);
             }
-            console.log('Spark app id:', appId);
-
         } catch (error) {
             console.error('Failed to execute cell:', error);
         }
