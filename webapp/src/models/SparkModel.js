@@ -67,6 +67,7 @@ class SparkModel {
     if (!appIdTag) return null;
     
     const appId = appIdTag.textContent.split(': ')[1];
+    console.log('Extracted Spark app ID:', appId);
     return appId && appId.startsWith('app-') ? appId : null;
   }
 
