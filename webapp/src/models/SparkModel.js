@@ -28,31 +28,34 @@ class SparkModel {
 
   static async storeSparkInfo(sparkAppId, notebookPath) {
     console.log('Attempting to store spark info for:', sparkAppId);
-    // Only store if it's an actual Spark application ID
+    const token = sessionStorage.getItem('token');
+    
     if (!sparkAppId.startsWith('app-')) {
         console.log('Not a valid Spark application ID:', sparkAppId);
         return;
     }
 
     try {
-        const checkResponse = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}/status`);
-        console.log('Status check response:', checkResponse.status);
+        const checkResponse = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}/status`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
         if (checkResponse.ok) {
             console.log('Spark app ID already exists:', sparkAppId);
             return;
         }
     } catch (error) {
         console.log('Status check failed:', error);
-        if (error.response?.status !== 404) {
-            console.log('Unexpected error, skipping storage');
-            return;
-        }
     }
 
     const response = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
             notebookPath: notebookPath,
@@ -79,21 +82,6 @@ class SparkModel {
 
   static async createSparkSession(notebookPath) {
     try {
-        console.log('Creating Spark session for notebook:', notebookPath);
-        const response = await fetch(`${config.serverBaseUrl}/spark_app/session`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                notebookPath: notebookPath
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to create Spark session');
-        }
-
         // Create a cell with Spark initialization code
         const sparkInitCode = `spark = create_spark("${notebookPath}")
 spark`;

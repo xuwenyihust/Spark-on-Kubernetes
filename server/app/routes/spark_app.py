@@ -19,12 +19,6 @@ def update_spark_app_config(notbook_path):
     data = request.get_json()
     return SparkApp.update_spark_app_config_by_notebook_path(notbook_path, data)
 
-@spark_app_blueprint.route('/spark_app/session', methods=['POST'])
-def create_spark_session():
-    data = request.get_json()
-    notebook_path = data.get('notebookPath')
-    return SparkApp.create_spark_session(notebook_path)
-
 @spark_app_blueprint.route('/spark_app/<spark_app_id>/status', methods=['GET'])
 def get_spark_app_status(spark_app_id):
     logging.info(f"Getting spark app status for app id: {spark_app_id}")
