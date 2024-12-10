@@ -116,9 +116,9 @@ def create_spark(notebook_path=None):
     except Exception as e:
         logger.error(f"Error loading config: {str(e)}. Using defaults.")
         config_json = {
-            'spark.executor.memory': '1g',
-            'spark.executor.cores': 1,
-            'spark.executor.instances': 1
+            'executor_memory': '1g',
+            'executor_cores': 1,
+            'executor_instances': 1
         }
     
     spark = PawMarkSparkSession(
@@ -133,9 +133,9 @@ def create_spark(notebook_path=None):
             .config("spark.eventLog.dir", "/opt/data/spark-events") \
             .config("spark.history.fs.logDirectory", "/opt/data/spark-events") \
             .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse") \
-            .config("executor.memory", config_json['executor.memory']) \
-            .config("executor.cores", config_json['executor.cores']) \
-            .config("spark.executor.instances", config_json['spark.executor.instances']) \
+            .config("executor.memory", config_json['executor_memory']) \
+            .config("executor.cores", config_json['executor_cores']) \
+            .config("spark.executor.instances", config_json['executor_instances']) \
             .getOrCreate()
         )
     
