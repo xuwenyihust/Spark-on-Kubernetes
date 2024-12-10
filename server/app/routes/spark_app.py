@@ -8,8 +8,6 @@ spark_app_blueprint = Blueprint('spark_app', __name__)
 
 logging.basicConfig(level=logging.INFO)
 
-# @jwt_required()
-# @identify_user
 @spark_app_blueprint.route('/spark_app/<path:notbook_path>/config', methods=['GET'])
 def get_spark_app_config(notbook_path):
     logging.info(f"Getting spark app config for notebook path: {notbook_path}")
