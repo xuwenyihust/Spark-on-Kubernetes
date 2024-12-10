@@ -5,18 +5,22 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Clean install with specific dependency resolution
+# Clean and setup npm
 RUN npm cache clean --force && \
-    npm install --legacy-peer-deps && \
+    npm set legacy-peer-deps=true
+
+# Install dependencies in a specific order
+RUN npm install && \
     npm install @jridgewell/gen-mapping@0.3.2 && \
-    npm install @babel/generator@7.23.0
+    npm install @babel/generator@7.23.0 && \
+    npm install @babel/traverse@7.23.0
 
 # Copy the rest of the application
 COPY . .
 
 # Build with increased memory limit
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-RUN npm run build
+RUN npm rebuild && npm run build
 
 # Stage 2: Serve the app with nginx
 FROM nginx:stable-alpine
