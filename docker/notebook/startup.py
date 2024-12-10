@@ -106,7 +106,7 @@ class PawMarkSparkSession:
         </div>
         """
 
-def create_spark_dev():
+def create_spark():
     logger.info("Creating Spark session")
     try:
         config_json = requests.get("http://server:5002/spark_app/config").json()
@@ -133,4 +133,11 @@ def create_spark_dev():
     
     return spark
     
-spark = create_spark_dev()
+# Make create_spark_dev available in IPython's global namespace
+ip = get_ipython()
+if ip is not None:
+    # Add to global namespace
+    ip.user_global_ns['create_spark'] = create_spark
+
+# Don't create spark instance by default
+# Remove or comment out: spark = create_spark_dev()

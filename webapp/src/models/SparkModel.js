@@ -60,13 +60,9 @@ class SparkModel {
         // Generate a unique spark app ID
         const sparkAppId = `spark-${Date.now()}`;
 
-        // Create a cell with Spark initialization code that uses the config
-        const sparkInitCode = `
-from startup import create_spark_dev
-
-spark = create_spark_dev()
-spark
-`;
+        // Create a cell with Spark initialization code that uses the existing spark instance
+        const sparkInitCode = `spark = create_spark()
+spark`;
 
         // Create the Spark session with this config
         const response = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}`, {
