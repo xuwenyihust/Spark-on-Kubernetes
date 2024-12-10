@@ -29,3 +29,10 @@ def create_spark_session():
 def get_spark_app_status(spark_app_id):
     logging.info(f"Getting spark app status for app id: {spark_app_id}")
     return SparkApp.get_spark_app_status(spark_app_id)
+
+@spark_app_blueprint.route('/spark_app/<spark_app_id>', methods=['POST'])
+def create_spark_app(spark_app_id):
+    logging.info(f"Creating spark app with id: {spark_app_id}")
+    data = request.get_json()
+    notebook_path = data.get('notebookPath')
+    return SparkApp.create_spark_app(spark_app_id=spark_app_id, notebook_path=notebook_path)
