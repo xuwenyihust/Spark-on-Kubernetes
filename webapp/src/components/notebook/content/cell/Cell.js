@@ -16,6 +16,7 @@ import TextResult from './result/TextResult';
 import ErrorResult from './result/ErrorResult';
 import CodeResult from './result/CodeResult';
 import DisplayResult from './result/DisplayResult';
+import SparkOutputBox from './result/SparkOutputBox';
 
 
 function Cell({ 
@@ -85,6 +86,32 @@ function Cell({
       }
     }
 
+    const renderOutput = (output) => {
+      let OutputComponent;
+      
+      if (output.output_type === OutputType.STREAM) {
+        OutputComponent = TextResult;
+      } else if (output.output_type === OutputType.ERROR) {
+        OutputComponent = ErrorResult;
+      } else if (output.output_type === OutputType.EXECUTE_RESULT || 
+                 output.output_type === OutputType.DISPLAY_DATA) {
+        if (output.data && output.data['text/html'] && 
+            (output.data['text/html'].includes('SparkSession') || 
+             output.data['text/html'].includes('Spark Session Information'))) {
+          return (
+            <SparkOutputBox>
+              <DisplayResult output={output} />
+            </SparkOutputBox>
+          );
+        }
+        OutputComponent = DisplayResult;
+      } else {
+        OutputComponent = CodeResult;
+      }
+      
+      return <OutputComponent output={output} />;
+    };
+
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'flex-start' }}
@@ -150,16 +177,7 @@ function Cell({
         </div>      
 
         {cell.outputs && cell.outputs.length > 0 && cell.outputs.map((output, index) => 
-          output.output_type === OutputType.EXECUTE_RESULT ? 
-            TextResult(output) :
-              (output.output_type === OutputType.ERROR ? (
-                ErrorResult(index, isFocused, output)
-              ) : (output.output_type === OutputType.STREAM ? (
-                CodeResult(index, output)
-              ) : (output.output_type === OutputType.DISPLAY_DATA ? (
-                DisplayResult(output)
-              ) : null))
-            )
+          renderOutput(output)
         )}
       </div>
     )
