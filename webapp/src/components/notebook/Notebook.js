@@ -298,16 +298,17 @@ function Notebook({
                 outputs: []
             };
 
-            // Add the cell to the notebook
+            // Add the cell to the bottom of the notebook
             const cells = [...notebookState.content.cells];
-            cells.unshift(newCell);
+            cells.push(newCell);
             setNotebookState({
                 ...notebookState,
                 content: { ...notebookState.content, cells }
             });
 
-            // Execute the cell
-            await handleRunCodeCell(newCell, CellStatus.IDLE, (status) => setCellStatus(0, status));
+            // Execute the cell (now need to use the last index)
+            const newCellIndex = cells.length - 1;
+            await handleRunCodeCell(newCell, CellStatus.IDLE, (status) => setCellStatus(newCellIndex, status));
             
             console.log('Spark session created with ID:', sparkAppId);
             setSparkAppId(sparkAppId);
