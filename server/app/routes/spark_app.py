@@ -8,12 +8,6 @@ spark_app_blueprint = Blueprint('spark_app', __name__)
 
 logging.basicConfig(level=logging.INFO)
 
-@spark_app_blueprint.route('/spark_app/<path:spark_app_id>', methods=['POST'])
-def create_spark_app(spark_app_id):
-    data = request.get_json()
-    notebook_path = data.get('notebookPath', None)
-    return SparkApp.create_spark_app(spark_app_id=spark_app_id, notebook_path=notebook_path)
-
 # @jwt_required()
 # @identify_user
 @spark_app_blueprint.route('/spark_app/<path:notbook_path>/config', methods=['GET'])
@@ -31,16 +25,4 @@ def update_spark_app_config(notbook_path):
 def create_spark_session():
     data = request.get_json()
     notebook_path = data.get('notebookPath')
-    spark_config = data.get('config')
-    
-    try:
-        spark_app_id = SparkApp.create_spark_session(notebook_path, spark_config)
-        return jsonify({
-            'status': 'success',
-            'sparkAppId': spark_app_id
-        })
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+    return SparkApp.create_spark_session(notebook_path)

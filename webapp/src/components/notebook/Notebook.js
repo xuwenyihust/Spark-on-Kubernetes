@@ -288,7 +288,7 @@ function Notebook({
     const handleCreateSparkSession = async () => {
         console.log('Create Spark session clicked');
         try {
-            const { sparkAppId, initializationCode } = await SparkModel.createSparkSession(notebookState.path);
+            const { initializationCode } = await SparkModel.createSparkSession(notebookState.path);
             
             // Create a new cell with the initialization code
             const newCell = {
@@ -306,12 +306,10 @@ function Notebook({
                 content: { ...notebookState.content, cells }
             });
 
-            // Execute the cell (now need to use the last index)
+            // Execute the cell
             const newCellIndex = cells.length - 1;
             await handleRunCodeCell(newCell, CellStatus.IDLE, (status) => setCellStatus(newCellIndex, status));
             
-            console.log('Spark session created with ID:', sparkAppId);
-            setSparkAppId(sparkAppId);
         } catch (error) {
             console.error('Failed to create Spark session:', error);
             alert('Failed to create Spark session. Please check the configuration.');
