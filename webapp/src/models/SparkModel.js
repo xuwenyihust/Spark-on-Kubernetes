@@ -61,7 +61,7 @@ class SparkModel {
         const sparkAppId = `spark-${Date.now()}`;
 
         // Create a cell with Spark initialization code that uses the existing spark instance
-        const sparkInitCode = `spark = create_spark()
+        const sparkInitCode = `spark = create_spark("${notebookPath}")
 spark`;
 
         // Create the Spark session with this config

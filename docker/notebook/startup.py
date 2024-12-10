@@ -106,13 +106,21 @@ class PawMarkSparkSession:
         </div>
         """
 
-def create_spark():
+def create_spark(notebook_path=None):
     logger.info("Creating Spark session")
     try:
-        config_json = requests.get("http://server:5002/spark_app/config").json()
+        if notebook_path:
+            config_json = requests.get(f"http://server:5002/spark_app/{notebook_path}/config").json()
+        else:
+            config_json = requests.get("http://server:5002/spark_app/config").json()
     except Exception as e:
-        config_json = 'Error loading config: ' + str(e)
-
+        logger.error(f"Error loading config: {str(e)}. Using defaults.")
+        config_json = {
+            'spark.executor.memory': '1g',
+            'spark.executor.cores': 1,
+            'spark.executor.instances': 1
+        }
+    
     spark = PawMarkSparkSession(
         config_json,
         SparkSession.builder \
@@ -138,6 +146,3 @@ ip = get_ipython()
 if ip is not None:
     # Add to global namespace
     ip.user_global_ns['create_spark'] = create_spark
-
-# Don't create spark instance by default
-# Remove or comment out: spark = create_spark_dev()
