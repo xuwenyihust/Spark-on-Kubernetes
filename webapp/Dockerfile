@@ -1,9 +1,17 @@
 # Stage 1: Build the React application
 FROM node:14 as build
 WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
-RUN npm install
+
+# Install dependencies with legacy peer deps flag
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application
 COPY . .
+
+# Build the application
 RUN npm run build
 
 # Stage 2: Serve the app with nginx
