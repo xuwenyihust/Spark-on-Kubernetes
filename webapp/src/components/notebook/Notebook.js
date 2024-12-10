@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import NotebookHeader from './header/NotebookHeader';
 import Code from './content/Code';
 import Config from './content/Config';
@@ -13,15 +13,15 @@ import config from '../../config';
 import { Box } from '@mui/material';
 
 
-function Notebook({ 
+const Notebook = forwardRef(({ 
     showNotebook, 
     notebook,
     notebookState,
     setNotebookState,
     isNotebookModified,
     setIsNotebookModified,
-    handleDeleteNotebook }) {
-
+    handleDeleteNotebook 
+}, ref) => {
     const jupyterBaseUrl= `${config.jupyterBaseUrl}`
     const baseUrl = `${jupyterBaseUrl}/api/contents/`
 
@@ -61,7 +61,7 @@ function Notebook({
                 isExecuted: cell.cell_type === 'code' ? false : cell.cell_type === 'markdown' ? true : cell.isExecuted,
                 lastExecutionResult: cell.lastExecutionResult === null? null : cell.lastExecutionResult, 
                 lastExecutionTime: cell.lastExecutionTime === null? null : cell.lastExecutionTime
-              }));
+            }));
             setNotebookState({
                 ...notebook,
                 content: {
@@ -70,12 +70,24 @@ function Notebook({
                 }
             });
             setCurrentName(notebook.name);
+
+            // Reset sparkAppId when switching notebooks, but immediately fetch the associated Spark app
+            setSparkAppId(null);
+            SparkModel.getSparkAppByNotebookPath(notebook.path)
+                .then(sparkApp => {
+                    if (sparkApp && sparkApp.spark_app_id) {
+                        setSparkAppId(sparkApp.spark_app_id);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch Spark app:', error);
+                });
         }
+        
         SessionModel.getSession(notebook.path)
             .then((kernelId) => {
                 setKernelId(kernelId);
             });
-        setSparkAppId(null);
     }, [notebook]);
 
     const clearOutputs = () => {
@@ -318,6 +330,19 @@ function Notebook({
         }
     };
 
+    // Add useEffect to log sparkAppId changes
+    useEffect(() => {
+        console.log('sparkAppId changed:', sparkAppId);
+    }, [sparkAppId]);
+
+    // Expose setSparkAppId to parent through ref
+    useImperativeHandle(ref, () => ({
+        setSparkAppId: (id) => {
+            console.log('setSparkAppId called with:', id);
+            setSparkAppId(id);
+        }
+    }));
+
     return (
         <div>
             {showNotebook && (
@@ -382,6 +407,6 @@ function Notebook({
             )}
         </div>
     );
-}
+});
 
 export default Notebook;

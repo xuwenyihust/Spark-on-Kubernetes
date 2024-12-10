@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LoginForm from './components/auth/LoginForm';
 import Sidebar from './components/sidebar/Sidebar';
 import Notebook from './components/notebook/Notebook';
@@ -8,6 +8,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import config from './config';
 import NotebookModel from './models/NotebookModel';
 import DirectoryModel from './models/DirectoryModel';
+import SparkModel from './models/SparkModel';
 
 const theme = createTheme({
   components: {
@@ -58,6 +59,12 @@ const App = () => {
   const [rootPath, setRootPath] = useState('work');
   const [workspaceFiles, setWorkspaceFiles] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const notebookRef = useRef(null);
+
+  useEffect(() => {
+    console.log('notebookRef current:', notebookRef.current);
+  }, [notebookRef.current]);
 
   // Auth
   useEffect(() => {
@@ -128,22 +135,36 @@ const App = () => {
     }
   };  
 
-  const handleExistingNotebookClick = (path) => {
+  const handleExistingNotebookClick = async (path) => {
     if (handleUnsavedChanges()) {
-      NotebookModel.fetchNotebook(`${path}`).then((data) => {
-        if (data.message == 'Token has expired') {
-          console.error('Token has expired, please log in again');
-          logout();
-        } else {
-          console.log('Fetched notebook:', data);
-          setNotebook(data);
-          setShowHistoryServer(false);
-          setShowScheduler(false);
-          setShowNotebook(true);
+        try {
+            const [notebookData, sparkApp] = await Promise.all([
+                NotebookModel.fetchNotebook(`${path}`),
+                SparkModel.getSparkAppByNotebookPath(path)
+            ]);
+
+            if (notebookData.message === 'Token has expired') {
+                console.error('Token has expired, please log in again');
+                logout();
+                return;
+            }
+
+            console.log('Fetched notebook:', notebookData);
+            setNotebook(notebookData);
+
+            console.log('Associated Spark app:', sparkApp);
+            
+            // Update Spark badge if there's an active Spark app
+            if (sparkApp && sparkApp.spark_app_id) {
+                notebookRef.current?.setSparkAppId(sparkApp.spark_app_id);
+            }
+
+            setShowHistoryServer(false);
+            setShowScheduler(false);
+            setShowNotebook(true);
+        } catch (error) {
+            console.error('Failed to fetch notebook or Spark app:', error);
         }
-      }).catch((error) => {
-        console.error('Failed to fetch notebook:', error);
-      });
     }
   }
 
@@ -211,6 +232,7 @@ const App = () => {
             username={username}
             useremail={useremail}/>
           <Notebook 
+            ref={notebookRef}
             showNotebook={showNotebook}
             notebook={notebook}
             notebookState={notebookState}

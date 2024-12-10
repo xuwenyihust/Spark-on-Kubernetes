@@ -94,6 +94,28 @@ spark`;
         throw error;
     }
   }
+
+  static async getSparkAppByNotebookPath(notebookPath) {
+    const token = sessionStorage.getItem('token');
+    try {
+        const response = await fetch(`${config.serverBaseUrl}/notebook/spark_app/${notebookPath}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            return null;
+        }
+        
+        const sparkApps = await response.json();
+        return sparkApps.length > 0 ? sparkApps[0] : null;
+    } catch (error) {
+        console.error('Failed to fetch Spark app:', error);
+        return null;
+    }
+  }
 }
 
 export default SparkModel;
