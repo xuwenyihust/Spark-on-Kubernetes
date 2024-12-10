@@ -36,6 +36,8 @@ function Notebook({
     const [cellStatuses, setCellStatuses] = useState(notebookState.content ? notebookState.content.cells.map(() => CellStatus.IDLE) : []);
     const [cellExecutedStatuses, setCellExecutedStatuses] = useState(notebookState.content ? notebookState.content.cells.map(cell => cell.cell_type === 'markdown') : []);
 
+    const [sparkConfig, setSparkConfig] = useState(null);
+    
     const setCellStatus = (index, status) => {
         setCellStatuses(prevStatuses => {
           const newStatuses = [...prevStatuses];
@@ -265,6 +267,57 @@ function Notebook({
         }
     };
 
+    const runAllCells = async () => {
+        console.log('Running all cells');
+        try {
+            await NotebookModel.runAllCells(
+                jupyterBaseUrl,
+                notebookState,
+                kernelId,
+                setKernelId,
+                cellStatuses,
+                setCellStatus,
+                cellExecutedStatuses,
+                setCellExecutedStatus
+            );
+        } catch (error) {
+            console.error('Failed to run all cells:', error);
+        }
+    };
+
+    const handleCreateSparkSession = async () => {
+        console.log('Create Spark session clicked');
+        try {
+            const { sparkAppId, initializationCode } = await SparkModel.createSparkSession(notebookState.path);
+            
+            // Create a new cell with the initialization code
+            const newCell = {
+                cell_type: 'code',
+                source: initializationCode,
+                metadata: {},
+                outputs: []
+            };
+
+            // Add the cell to the bottom of the notebook
+            const cells = [...notebookState.content.cells];
+            cells.push(newCell);
+            setNotebookState({
+                ...notebookState,
+                content: { ...notebookState.content, cells }
+            });
+
+            // Execute the cell (now need to use the last index)
+            const newCellIndex = cells.length - 1;
+            await handleRunCodeCell(newCell, CellStatus.IDLE, (status) => setCellStatus(newCellIndex, status));
+            
+            console.log('Spark session created with ID:', sparkAppId);
+            setSparkAppId(sparkAppId);
+        } catch (error) {
+            console.error('Failed to create Spark session:', error);
+            alert('Failed to create Spark session. Please check the configuration.');
+        }
+    };
+
     return (
         <div>
             {showNotebook && (
@@ -310,18 +363,10 @@ function Notebook({
                             handleCreateCell={handleCreateCell}
                             kernelId={kernelId}
                             setKernelId={setKernelId}
-                            runAllCells={
-                                () => NotebookModel.runAllCells(
-                                    jupyterBaseUrl, 
-                                    notebookState, 
-                                    kernelId, 
-                                    setKernelId, 
-                                    cellStatuses, 
-                                    setCellStatus,
-                                    cellExecutedStatuses,
-                                    setCellExecutedStatus)}
+                            runAllCells={runAllCells}
                             saveNotebook={handleUpdateNotebook}
                             deleteNotebook={handleDeleteNotebook}
+                            createSparkSession={handleCreateSparkSession}
                             /> : contentType === ContentType.Config ?
                             <Config 
                                 notebook={notebook}

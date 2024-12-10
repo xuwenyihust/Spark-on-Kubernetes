@@ -22,7 +22,8 @@ const Code = ({
   setKernelId,
   runAllCells,
   saveNotebook,
-  deleteNotebook
+  deleteNotebook,
+  createSparkSession
 }) => {
 
   const jupyterBaseUrl= `${config.jupyterBaseUrl}`
@@ -35,7 +36,8 @@ const Code = ({
         notebook={notebook}
         runAllCells={runAllCells}
         saveNotebook={saveNotebook}
-        deleteNotebook={deleteNotebook}/>
+        deleteNotebook={deleteNotebook}
+        createSparkSession={createSparkSession}/>
 
       <Box sx={{ 
           width: '95%',

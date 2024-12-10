@@ -26,3 +26,21 @@ def update_spark_app_config(notbook_path):
     logging.info(f"Updating spark app config for notebook path: {notbook_path}")
     data = request.get_json()
     return SparkApp.update_spark_app_config_by_notebook_path(notbook_path, data)
+
+@spark_app_blueprint.route('/spark_app/session', methods=['POST'])
+def create_spark_session():
+    data = request.get_json()
+    notebook_path = data.get('notebookPath')
+    spark_config = data.get('config')
+    
+    try:
+        spark_app_id = SparkApp.create_spark_session(notebook_path, spark_config)
+        return jsonify({
+            'status': 'success',
+            'sparkAppId': spark_app_id
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
