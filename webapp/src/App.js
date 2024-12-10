@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LoginForm from './components/auth/LoginForm';
 import Sidebar from './components/sidebar/Sidebar';
 import Notebook from './components/notebook/Notebook';
@@ -59,6 +59,8 @@ const App = () => {
   const [rootPath, setRootPath] = useState('work');
   const [workspaceFiles, setWorkspaceFiles] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const notebookRef = useRef(null);
 
   // Auth
   useEffect(() => {
@@ -147,8 +149,8 @@ const App = () => {
             setNotebook(notebookData);
             
             // Update Spark badge if there's an active Spark app
-            if (sparkApp) {
-                setSparkAppId(sparkApp.spark_app_id);
+            if (sparkApp && sparkApp.spark_app_id) {
+                notebookRef.current?.setSparkAppId(sparkApp.spark_app_id);
             }
 
             setShowHistoryServer(false);
@@ -224,6 +226,7 @@ const App = () => {
             username={username}
             useremail={useremail}/>
           <Notebook 
+            ref={notebookRef}
             showNotebook={showNotebook}
             notebook={notebook}
             notebookState={notebookState}
