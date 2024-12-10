@@ -15,18 +15,30 @@ class SparkModel {
   }
 
   static async storeSparkInfo(sparkAppId, notebookPath) {
+    // First check if this app ID already exists
+    try {
+        const checkResponse = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}/status`);
+        if (checkResponse.ok) {
+            console.log('Spark app ID already exists:', sparkAppId);
+            return; // Exit if app ID already exists
+        }
+    } catch (error) {
+        console.log('App ID does not exist, proceeding with storage');
+    }
+
+    // If we get here, the app ID doesn't exist, so store it
     const response = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        'notebookPath':  notebookPath,
-       }),
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            'notebookPath': notebookPath,
+        }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to store Spark application id: ${response.status}`);
+        throw new Error(`Failed to store Spark application id: ${response.status}`);
     }
   }
 
