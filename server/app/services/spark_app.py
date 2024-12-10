@@ -174,3 +174,25 @@ class SparkApp:
         return Response(
             response=json.dumps({'message': str(e)}),
             status=500)
+  
+  @staticmethod
+  def get_spark_app_status(spark_app_id: str):
+    logger.info(f"Getting spark app status for app id: {spark_app_id}")
+    try:
+        spark_app = SparkAppModel.query.filter_by(spark_app_id=spark_app_id).first()
+        if spark_app is None:
+            logger.error("Spark application not found")
+            return Response(
+                response=json.dumps({'message': 'Spark application not found'}),
+                status=404
+            )
+        return Response(
+            response=json.dumps({'status': spark_app.status}),
+            status=200
+        )
+    except Exception as e:
+        logger.error(f"Error getting spark app status: {e}")
+        return Response(
+            response=json.dumps({'message': str(e)}),
+            status=500
+        )
