@@ -1,20 +1,9 @@
 # Stage 1: Build the React application
-FROM node:18 as build
+FROM node:14 as build
 WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
-
-# Clear npm cache and install dependencies
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps && \
-    npm install @jridgewell/gen-mapping
-
-# Copy the rest of the application
+RUN npm install
 COPY . .
-
-# Build the application with increased memory allocation
-ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # Stage 2: Serve the app with nginx
