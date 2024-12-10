@@ -155,8 +155,21 @@ class NotebookModel {
 
   static async getSparkApps(notebookPath = '') {
     const token = sessionStorage.getItem('token');
+    
+    // Safely handle notebook path
+    let simplifiedPath = notebookPath;
+    const pathParts = notebookPath.split('/');
+    
+    // Only modify path if it matches the pattern work/user@domain/notebook.ipynb
+    if (pathParts.length >= 3 && 
+        pathParts[0] === 'work' && 
+        pathParts[1].includes('@')) {
+        // Remove the username part and rejoin
+        simplifiedPath = [pathParts[0], ...pathParts.slice(2)].join('/');
+        console.log('Simplified notebook path:', simplifiedPath);
+    }
 
-    const response = await fetch(`${config.serverBaseUrl}/notebook/spark_app/${notebookPath}`, {
+    const response = await fetch(`${config.serverBaseUrl}/notebook/spark_app/${simplifiedPath}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
