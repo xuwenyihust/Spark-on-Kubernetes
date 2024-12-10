@@ -288,10 +288,29 @@ function Notebook({
     const handleCreateSparkSession = async () => {
         console.log('Create Spark session clicked');
         try {
-            const sparkAppId = await SparkModel.createSparkSession(notebookState.path);
+            const { sparkAppId, initializationCode } = await SparkModel.createSparkSession(notebookState.path);
+            
+            // Create a new cell with the initialization code
+            const newCell = {
+                cell_type: 'code',
+                source: initializationCode,
+                metadata: {},
+                outputs: []
+            };
+
+            // Add the cell to the notebook
+            const cells = [...notebookState.content.cells];
+            cells.unshift(newCell);
+            setNotebookState({
+                ...notebookState,
+                content: { ...notebookState.content, cells }
+            });
+
+            // Execute the cell
+            await handleRunCodeCell(newCell, CellStatus.IDLE, (status) => setCellStatus(0, status));
+            
             console.log('Spark session created with ID:', sparkAppId);
             setSparkAppId(sparkAppId);
-            alert('Spark session created successfully!');
         } catch (error) {
             console.error('Failed to create Spark session:', error);
             alert('Failed to create Spark session. Please check the configuration.');
