@@ -26,3 +26,15 @@ def create_spark_session():
     data = request.get_json()
     notebook_path = data.get('notebookPath')
     return SparkApp.create_spark_session(notebook_path)
+
+@spark_app_blueprint.route('/spark_app/<spark_app_id>/status', methods=['GET'])
+def get_spark_app_status(spark_app_id):
+    logging.info(f"Getting spark app status for app id: {spark_app_id}")
+    try:
+        spark_app = SparkAppModel.query.get(spark_app_id)
+        if spark_app:
+            return jsonify({'status': spark_app.status}), 200
+        return jsonify({'message': 'Spark application not found'}), 404
+    except Exception as e:
+        logging.error(f"Error getting spark app status: {e}")
+        return jsonify({'message': str(e)}), 500

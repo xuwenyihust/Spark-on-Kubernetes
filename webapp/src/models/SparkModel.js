@@ -27,20 +27,26 @@ class SparkModel {
   }
 
   static async storeSparkInfo(sparkAppId, notebookPath) {
+    console.log('Attempting to store spark info for:', sparkAppId);
     // Only store if it's an actual Spark application ID
     if (!sparkAppId.startsWith('app-')) {
-      console.log('Not a valid Spark application ID:', sparkAppId);
-      return;
+        console.log('Not a valid Spark application ID:', sparkAppId);
+        return;
     }
 
     try {
         const checkResponse = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}/status`);
+        console.log('Status check response:', checkResponse.status);
         if (checkResponse.ok) {
             console.log('Spark app ID already exists:', sparkAppId);
             return;
         }
     } catch (error) {
-        console.log('App ID does not exist, proceeding with storage');
+        console.log('Status check failed:', error);
+        if (error.response?.status !== 404) {
+            console.log('Unexpected error, skipping storage');
+            return;
+        }
     }
 
     const response = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}`, {
