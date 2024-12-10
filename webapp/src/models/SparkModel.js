@@ -60,29 +60,9 @@ class SparkModel {
         // Generate a unique spark app ID
         const sparkAppId = `spark-${Date.now()}`;
 
-        // Create a cell with Spark initialization code that uses the config
-        const sparkInitCode = `
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder\\
-    .appName("${sparkAppId}")\\
-    .master("spark://spark-master:7077")\\
-    .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.0.0")\\
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")\\
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")\\
-    .config("spark.eventLog.enabled", "true")\\
-    .config("spark.eventLog.dir", "/opt/data/spark-events")\\
-    .config("spark.history.fs.logDirectory", "/opt/data/spark-events")\\
-    .config("spark.sql.warehouse.dir", "/opt/data/spark-warehouse")\\
-    .config("spark.executor.memory", "${sparkConfig['spark.executor.memory']}")\\
-    .config("spark.executor.cores", ${sparkConfig['spark.executor.cores']})\\
-    .config("spark.executor.instances", ${sparkConfig['spark.executor.instances']})\\
-    .config("spark.driver.memory", "${sparkConfig['spark.driver.memory']}")\\
-    .config("spark.driver.cores", ${sparkConfig['spark.driver.cores']})\\
-    .getOrCreate()
-
-spark
-`;
+        // Create a cell with Spark initialization code that uses the existing spark instance
+        const sparkInitCode = `spark = create_spark("${notebookPath}")
+spark`;
 
         // Create the Spark session with this config
         const response = await fetch(`${config.serverBaseUrl}/spark_app/${sparkAppId}`, {
