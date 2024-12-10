@@ -147,6 +147,8 @@ const App = () => {
 
             console.log('Fetched notebook:', notebookData);
             setNotebook(notebookData);
+
+            console.log('Associated Spark app:', sparkApp);
             
             // Update Spark badge if there's an active Spark app
             if (sparkApp && sparkApp.spark_app_id) {
