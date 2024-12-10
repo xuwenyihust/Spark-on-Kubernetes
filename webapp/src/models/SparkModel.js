@@ -8,9 +8,22 @@ class SparkModel {
   static isSparkInfo(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    const sparkInfo = doc.querySelector('h3');
-    console.log('sparkInfo:', sparkInfo);
-    return sparkInfo && sparkInfo.textContent === 'Spark Session Information';
+    
+    // Check if it's a Spark info div
+    const sparkInfo = doc.querySelector('div');
+    if (!sparkInfo || !sparkInfo.textContent.includes('Spark Session Information')) {
+        return false;
+    }
+
+    // Verify it has an Application ID that starts with 'app-'
+    const appIdElement = Array.from(doc.querySelectorAll('p'))
+        .find(p => p.textContent.includes('Application ID:'));
+    if (!appIdElement) {
+        return false;
+    }
+
+    const appId = appIdElement.textContent.split(': ')[1];
+    return appId && appId.startsWith('app-');
   }
 
   static async storeSparkInfo(sparkAppId, notebookPath) {
@@ -48,9 +61,13 @@ class SparkModel {
   static extractSparkAppId(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    const pTags = Array.from(doc.querySelectorAll('p'));
-    const appIdTag = pTags.find(p => p.textContent.includes('Application ID:'));
-    return appIdTag ? appIdTag.textContent.split(': ')[1] : null;
+    const appIdTag = Array.from(doc.querySelectorAll('p'))
+        .find(p => p.textContent.includes('Application ID:'));
+    
+    if (!appIdTag) return null;
+    
+    const appId = appIdTag.textContent.split(': ')[1];
+    return appId && appId.startsWith('app-') ? appId : null;
   }
 
   static async createSparkSession(notebookPath) {

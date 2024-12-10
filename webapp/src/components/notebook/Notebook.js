@@ -258,7 +258,7 @@ function Notebook({
             // Check if contains a spark app id
             if (result[0] && result[0].data && result[0].data['text/html'] && SparkModel.isSparkInfo(result[0].data['text/html'])) {
                 setSparkAppId(SparkModel.extractSparkAppId(result[0].data['text/html']));
-                SparkModel.storeSparkInfo(SparkModel.extractSparkAppId(result[0].data['text/html']), notebook.path)
+                SparkModel.storeSparkInfo(sparkAppId, notebook.path)
             }
             console.log('Spark app id:', sparkAppId);
 
