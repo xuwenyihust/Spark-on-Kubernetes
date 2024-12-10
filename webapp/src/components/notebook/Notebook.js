@@ -318,9 +318,17 @@ const Notebook = forwardRef(({
         }
     };
 
+    // Add useEffect to log sparkAppId changes
+    useEffect(() => {
+        console.log('sparkAppId changed:', sparkAppId);
+    }, [sparkAppId]);
+
     // Expose setSparkAppId to parent through ref
     useImperativeHandle(ref, () => ({
-        setSparkAppId: (id) => setSparkAppId(id)
+        setSparkAppId: (id) => {
+            console.log('setSparkAppId called with:', id);
+            setSparkAppId(id);
+        }
     }));
 
     return (

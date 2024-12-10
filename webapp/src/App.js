@@ -62,6 +62,10 @@ const App = () => {
 
   const notebookRef = useRef(null);
 
+  useEffect(() => {
+    console.log('notebookRef current:', notebookRef.current);
+  }, [notebookRef.current]);
+
   // Auth
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
