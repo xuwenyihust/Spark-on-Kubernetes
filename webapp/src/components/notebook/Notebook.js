@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import NotebookHeader from './header/NotebookHeader';
 import Code from './content/Code';
 import Config from './content/Config';
@@ -13,15 +13,15 @@ import config from '../../config';
 import { Box } from '@mui/material';
 
 
-function Notebook({ 
+const Notebook = forwardRef(({ 
     showNotebook, 
     notebook,
     notebookState,
     setNotebookState,
     isNotebookModified,
     setIsNotebookModified,
-    handleDeleteNotebook }) {
-
+    handleDeleteNotebook 
+}, ref) => {
     const jupyterBaseUrl= `${config.jupyterBaseUrl}`
     const baseUrl = `${jupyterBaseUrl}/api/contents/`
 
@@ -318,6 +318,11 @@ function Notebook({
         }
     };
 
+    // Expose setSparkAppId to parent through ref
+    useImperativeHandle(ref, () => ({
+        setSparkAppId: (id) => setSparkAppId(id)
+    }));
+
     return (
         <div>
             {showNotebook && (
@@ -382,6 +387,6 @@ function Notebook({
             )}
         </div>
     );
-}
+});
 
 export default Notebook;
