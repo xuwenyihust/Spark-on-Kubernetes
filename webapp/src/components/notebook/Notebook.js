@@ -257,11 +257,13 @@ function Notebook({
 
             // Check if contains a spark app id
             if (result[0] && result[0].data && result[0].data['text/html'] && SparkModel.isSparkInfo(result[0].data['text/html'])) {
-                setSparkAppId(SparkModel.extractSparkAppId(result[0].data['text/html']));
-                SparkModel.storeSparkInfo(SparkModel.extractSparkAppId(result[0].data['text/html']), notebook.path)
+                const appId = SparkModel.extractSparkAppId(result[0].data['text/html']);
+                setSparkAppId(appId);
+                if (appId) {
+                    SparkModel.storeSparkInfo(appId, notebook.path);
+                }
+                console.log('Spark app id:', appId);
             }
-            console.log('Spark app id:', sparkAppId);
-
         } catch (error) {
             console.error('Failed to execute cell:', error);
         }
@@ -288,7 +290,7 @@ function Notebook({
     const handleCreateSparkSession = async () => {
         console.log('Create Spark session clicked');
         try {
-            const { sparkAppId, initializationCode } = await SparkModel.createSparkSession(notebookState.path);
+            const { initializationCode } = await SparkModel.createSparkSession(notebookState.path);
             
             // Create a new cell with the initialization code
             const newCell = {
@@ -306,12 +308,10 @@ function Notebook({
                 content: { ...notebookState.content, cells }
             });
 
-            // Execute the cell (now need to use the last index)
+            // Execute the cell
             const newCellIndex = cells.length - 1;
             await handleRunCodeCell(newCell, CellStatus.IDLE, (status) => setCellStatus(newCellIndex, status));
             
-            console.log('Spark session created with ID:', sparkAppId);
-            setSparkAppId(sparkAppId);
         } catch (error) {
             console.error('Failed to create Spark session:', error);
             alert('Failed to create Spark session. Please check the configuration.');

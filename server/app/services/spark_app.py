@@ -1,7 +1,7 @@
 from app.models.spark_app import SparkAppModel
 from app.models.notebook import NotebookModel
 from app.models.spark_app_config import SparkAppConfigModel
-from flask import Response
+from flask import g, Response
 from datetime import datetime
 import json
 from database import db
@@ -143,45 +143,66 @@ class SparkApp:
       status=200)
   
   @staticmethod
-  def create_spark_app(spark_app_id: str = None, notebook_path: str = None):
-    logger.info(f"Creating spark app with id: {spark_app_id} for notebook path: {notebook_path}")
-
-    if spark_app_id is None:
-      logger.error("Spark app id is None")
-      return Response(
-        response=json.dumps({'message': 'Spark app id is None'}), 
-        status=404)
-
-    if notebook_path is None:
-      logger.error("Notebook path is None")
-      return Response(
-        response=json.dumps({'message': 'Notebook path is None'}), 
-        status=404)
-
+  def get_spark_app_status(spark_app_id: str):
+    logger.info(f"Getting spark app status for app id: {spark_app_id}")
     try:
-      # Get the notebook id
-      notebook = NotebookModel.query.filter_by(path=notebook_path).first()
-      notebook_id = notebook.id
-
-      # Create the spark app
-      spark_app = SparkAppModel(
-        spark_app_id=spark_app_id,
-        notebook_id=notebook_id,
-        user_id=notebook.user_id,
-        created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-      )
-
-      db.session.add(spark_app)
-      db.session.commit()
-
-      logger.info(f"Spark app created: {spark_app}")
+        spark_app = SparkAppModel.query.filter_by(spark_app_id=spark_app_id).first()
+        if spark_app is None:
+            logger.error("Spark application not found")
+            return Response(
+                response=json.dumps({'message': 'Spark application not found'}),
+                status=404
+            )
+        return Response(
+            response=json.dumps({'status': spark_app.status}),
+            status=200
+        )
     except Exception as e:
-      logger.error(f"Error creating spark app: {e}")
-      return Response(
-        response=json.dumps({'message': 'Error creating spark app: ' + str(e)}), 
-        status=404)
+        logger.error(f"Error getting spark app status: {e}")
+        return Response(
+            response=json.dumps({'message': str(e)}),
+            status=500
+        )
+  
+  @staticmethod
+  def create_spark_app(spark_app_id: str, notebook_path: str):
+    logger.info(f"Creating spark app with id: {spark_app_id} for notebook: {notebook_path}")
+    try:
+        if not g.user:
+            logger.error("User not found in context")
+            return Response(
+                response=json.dumps({'message': 'User not authenticated'}),
+                status=401
+            )
 
-    return Response(
-      response=json.dumps(spark_app.to_dict()), 
-      status=200
-    )
+        # Get the notebook
+        notebook = NotebookModel.query.filter_by(path=notebook_path).first()
+        if notebook is None:
+            logger.error("Notebook not found")
+            return Response(
+                response=json.dumps({'message': 'Notebook not found'}),
+                status=404
+            )
+
+        # Create new spark app
+        spark_app = SparkAppModel(
+            spark_app_id=spark_app_id,
+            notebook_id=notebook.id,
+            user_id=g.user.id,
+            created_at=datetime.now()
+        )
+        
+        db.session.add(spark_app)
+        db.session.commit()
+
+        return Response(
+            response=json.dumps(spark_app.to_dict()),
+            status=200
+        )
+    except Exception as e:
+        logger.error(f"Error creating spark app: {e}")
+        db.session.rollback()  # Add rollback on error
+        return Response(
+            response=json.dumps({'message': str(e)}),
+            status=500
+        )
