@@ -31,6 +31,8 @@ def get_spark_app_status(spark_app_id):
     return SparkApp.get_spark_app_status(spark_app_id)
 
 @spark_app_blueprint.route('/spark_app/<spark_app_id>', methods=['POST'])
+@jwt_required()
+@identify_user
 def create_spark_app(spark_app_id):
     logging.info(f"Creating spark app with id: {spark_app_id}")
     data = request.get_json()

@@ -201,6 +201,13 @@ class SparkApp:
   def create_spark_app(spark_app_id: str, notebook_path: str):
     logger.info(f"Creating spark app with id: {spark_app_id} for notebook: {notebook_path}")
     try:
+        if not g.user:
+            logger.error("User not found in context")
+            return Response(
+                response=json.dumps({'message': 'User not authenticated'}),
+                status=401
+            )
+
         # Get the notebook
         notebook = NotebookModel.query.filter_by(path=notebook_path).first()
         if notebook is None:
@@ -227,6 +234,7 @@ class SparkApp:
         )
     except Exception as e:
         logger.error(f"Error creating spark app: {e}")
+        db.session.rollback()  # Add rollback on error
         return Response(
             response=json.dumps({'message': str(e)}),
             status=500
