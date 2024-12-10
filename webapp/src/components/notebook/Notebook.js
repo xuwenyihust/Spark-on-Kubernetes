@@ -61,7 +61,7 @@ const Notebook = forwardRef(({
                 isExecuted: cell.cell_type === 'code' ? false : cell.cell_type === 'markdown' ? true : cell.isExecuted,
                 lastExecutionResult: cell.lastExecutionResult === null? null : cell.lastExecutionResult, 
                 lastExecutionTime: cell.lastExecutionTime === null? null : cell.lastExecutionTime
-              }));
+            }));
             setNotebookState({
                 ...notebook,
                 content: {
@@ -70,12 +70,24 @@ const Notebook = forwardRef(({
                 }
             });
             setCurrentName(notebook.name);
+
+            // Reset sparkAppId when switching notebooks, but immediately fetch the associated Spark app
+            setSparkAppId(null);
+            SparkModel.getSparkAppByNotebookPath(notebook.path)
+                .then(sparkApp => {
+                    if (sparkApp && sparkApp.spark_app_id) {
+                        setSparkAppId(sparkApp.spark_app_id);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch Spark app:', error);
+                });
         }
+        
         SessionModel.getSession(notebook.path)
             .then((kernelId) => {
                 setKernelId(kernelId);
             });
-        setSparkAppId(null);
     }, [notebook]);
 
     const clearOutputs = () => {
